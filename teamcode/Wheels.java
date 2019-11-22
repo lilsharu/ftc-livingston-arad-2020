@@ -73,12 +73,16 @@ public class Wheels {
     }
 
     public int[] ticksForDistanceRadians(double ticksPerRotation, double distance, double angle, String unit) {
+
         int[] array = new int[2];
         double x;
         double y;
+
+        //calculates x and y component of movement
         x = distance * Math.cos(angle);
         y = distance * Math.sin(angle);
 
+        //determines the unit that the coder uses/needs
         if (unit.equals("\"") || unit.equals("inches") || unit.equals("Inches") || unit.equals("in") || unit.equals("in.")) {
             array[0] = (int)Math.round((x / circumferenceInches()) * ticksPerRotation);
             array[1] = (int) Math.round((y / circumferenceInches()) * ticksPerRotation);
