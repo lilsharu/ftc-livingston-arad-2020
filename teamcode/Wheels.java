@@ -72,17 +72,29 @@ public class Wheels {
         return rotationDistanceFeet();
     }
 
-    public double ticksForDistance(double ticksPerRotation, double distance, String unit) {
+    public int[] ticksForDistanceRadians(double ticksPerRotation, double distance, double angle, String unit) {
+        int[] array = new int[2];
+        double x;
+        double y;
+        x = distance * Math.cos(angle);
+        y = distance * Math.sin(angle);
+
         if (unit.equals("\"") || unit.equals("inches") || unit.equals("Inches") || unit.equals("in") || unit.equals("in.")) {
-            return (distance / circumferenceInches()) * ticksPerRotation;
+            array[0] = (int)Math.round((x / circumferenceInches()) * ticksPerRotation);
+            array[1] = (int) Math.round((y / circumferenceInches()) * ticksPerRotation);
+            return array;
         }
         else if (unit.equals("'") || unit.equals("feet") || unit.equals("Feet") || unit.equals("ft") || unit.equals("ft.")) {
-            return (distance / circumferenceFeet()) * ticksPerRotation;
+            array[0] = (int)Math.round((x / circumferenceFeet()) * ticksPerRotation);
+            array[1] = (int)Math.round((y / circumferenceFeet()) * ticksPerRotation);
+            return array;
         }
         else if (unit.equals("mm") || unit.equals("MM") || unit.equals("millimeters") || unit.equals("millimetres") || unit.equals("milimeters")) {
-            return (distance / circumference()) * ticksPerRotation;
+            array[0] = (int) Math.round((x / circumference()) * ticksPerRotation);
+            array[1] = (int) Math.round((y / circumference()) * ticksPerRotation);
+            return array;
         }
-        else return Math.PI;
+        else return null;
     }
 
 }
