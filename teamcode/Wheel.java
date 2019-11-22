@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class Wheel {
     private DcMotor theMotor;
     private double radius;
-    private int ticks;
+    private double ticks;
     private String position;
 
     public Wheel(DcMotor m, double r, int ticks, String pos){
@@ -22,16 +22,18 @@ public class Wheel {
 
 
     public double getDPR(){
+
         return radius*2*Math.PI;
     }
 
     public double getNumOfRot(double distance){
-        return distance/radius;
+        double dpr = getDPR();
+        return distance/dpr;
     }
 
-    public int getNumOfTicks(){
-        double dpr= getDPR();
-        return (int) dpr*ticks; //Add in a rounding method
+    public int getNumOfTicks(double dist){
+        double nor= getNumOfRot(dist);
+        return (int) Math.round(nor*ticks);
     }
 
     @Override
