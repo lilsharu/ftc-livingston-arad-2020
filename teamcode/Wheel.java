@@ -4,12 +4,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class Wheel {
     private DcMotor theMotor;
+    private String OrgUn; //Unit entered
+    private String vertUn; //Unit to convert to
     private double radius;
-    private double ticks;
-    private String position;
+    private double ticks; //Ticks per a rotation
+    private String position; //String describing
 
-    public Wheel(DcMotor m, double r, int ticks, String pos){
+    public Wheel(DcMotor m, double r, int ticks, String pos, String unit){
         this.theMotor = m;
+        this.OrgUn = unit;
         this.radius = r;
         this.ticks = ticks;
         this.position = pos;
