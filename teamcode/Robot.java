@@ -152,6 +152,90 @@ public class Robot {
             leftMotor.setTargetPosition(roundedYTicks);
             middleMotor.setTargetPosition(roundedXTicks);
         }
+    
+        public void moveSideways(double power, int distance){
+            SetUpEncodersForDistance(distance);
+            //set drive power
+            middleDrive.setPower(power);
+            leftDrive.setPower(0);
+            rightDrive.setPower(0);
+            //Has motors run until position is reached
+            while(middleDrive.isBusy()){
+                //Waits
+            }
+
+            //Stops driving
+            turnOff();
+            //Changes mode back to normal
+            leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+            rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+            middleDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    
+    public void moveFoward(double power, int distance){
+        SetUpEncodersForDistance(distance);
+        //set drive power
+        middleDrive.setPower(0);
+        leftDrive.setPower(power);
+        rightDrive.setPower((-1*power));
+        //Has motors run until position is reached
+        while(leftDrive.isBusy()){
+            //Waits
+        }
+
+        //Stops driving
+        turnOff();
+        //Changes mode back to normal
+        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        middleDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void moveBackwards(double power, int distance){
+        SetUpEncodersForDistance(distance);
+        //set drive power
+        middleDrive.setPower(0);
+        leftDrive.setPower((-1*power));
+        rightDrive.setPower(power);
+        //Has motors run until position is reached
+        while(leftDrive.isBusy()){
+            //Waits
+        }
+
+        //Stops driving
+        turnOff();
+        //Changes mode back to normal
+        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        middleDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void SetUpEncodersForDistance(int distance){
+        //Reset encoder values
+        leftDrive.setMode(DcMotor.RunMode.RESET_ENCODERS);
+        rightDrive.setMode(DcMotor.RunMode.RESET_ENCODERS);
+        middleDrive.setMode(DcMotor.RunMode.RESET_ENCODERS);
+        //Set target position
+        leftDrive.setTargetPosition(distance);
+        rightDrive.setTargetPosition(distance);
+        middleDrive.setTargetPosition(distance);
+        //Switch to position mode
+        leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        middleDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    }
+    public void moveRight(double power){
+        rightDrive.setPower(power);
+        leftDrive.setPower(0);
+        middleDrive.setPower(0);
+    }
+    //Could use this instead of individual turning methods
+    public void turnOff(){
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
+        middleDrive.setPower(0);
+    }
+
 
 
     //Deciphering methods and other static methods:
@@ -182,4 +266,5 @@ public class Robot {
             newNum /= Math.pow(10, places);
             return newNum;
         }
+    
 }
