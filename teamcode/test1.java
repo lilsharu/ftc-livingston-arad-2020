@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 //import org.firstinspires.ftc.robotcontroller.external.samples.SampleRevBlinkinLedDriver;
 
 @TeleOp(name = "test1.1", group = "TankDrive")
-public class test1.1 extends OpMode {
+public class test1 extends OpMode {
 
     //Initialize hardware
     private DcMotor leftFrontMotor;
