@@ -21,7 +21,7 @@ public class Convert {
                     "\" but that was not an option");
         }
     }
-    public static double convertToInches(double currentValue, String currentUnit) {
+    public static double toInches(double currentValue, String currentUnit) {
         String unit = usedUnit(currentUnit);
         //tests each case
         switch(unit) {
@@ -38,9 +38,31 @@ public class Convert {
                                 "\" but that was not an option");
         }
     }
-    public static double convertToMillimeters(double currentValue, String currentUnit){
-        //Sends this to the convertToInches method and converts it to inches, then converts back to millimeters
-        return 25.4 * convertToInches(currentValue, usedUnit(currentUnit));
+    public static double toMillimeters(double currentValue, String currentUnit){
+        //Sends this to the toInches method and converts it to inches, then converts back to millimeters
+        return 25.4 * toInches(currentValue, usedUnit(currentUnit));
+    }
+
+    public static double toInches(int currentValue, String currentUnit) {
+        String unit = usedUnit(currentUnit);
+        //tests each case
+        switch(unit) {
+            case "in":
+                return currentValue;
+            case "ft":
+                return currentValue / 12.0;
+            case "mm":
+                return currentValue / 25.4;
+            default:
+                throw new Error(
+                        "The Unit Chosen Doesn't Match Any of the Options. You said \""
+                                + unit +
+                                "\" but that was not an option");
+        }
+    }
+    public static double toMillimeters(int currentValue, String currentUnit){
+        //Sends this to the toInches method and converts it to inches, then converts back to millimeters
+        return 25.4 * toInches(currentValue, usedUnit(currentUnit));
     }
     public static int round(double input) {
         return (int)Math.round(input);
