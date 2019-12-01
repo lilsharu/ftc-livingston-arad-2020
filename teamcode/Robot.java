@@ -1,11 +1,11 @@
+/*
+ * The Specific Robot Class for FIRE
+ * Created by Shourya Bansal, Aryan Bansal, Ally Mintz
+ */
+
 package org.firstinspires.ftc.teamcode;
 import org.firstinspires.ftc.teamcode.*;
 import org.firstinspires.ftc.teamcode.Auton.Wheel;
-
-/*
- * The Specific Robot Class for FIRE
- * Created by Shourya Bansal
- */
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
