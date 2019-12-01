@@ -124,16 +124,24 @@ public class BasicTeleOp extends OpMode {
             rightPower = 0.5 * power;
             leftPower = power;
         }
+      
+        
+        else if (G1rightBumper = true) {
+            Robot.middle_drive.setPower(0.8);
+        }
+        
+        else if (G1leftBumper = true) {
+            Robot.middle_drive.setPower(0.8);
+        }
+        
         else {
             rightPower = 0;
             leftPower = 0;
+            middle_drive = 0;
         }
-
-        Robot.frontRightMotor.setPower(rightPower);//replace left stick y with right stick y if you want more control
-        Robot.frontLeftMotor.setPower(leftPower);//replace left stick y with right stick y if you want more control
-        Robot.backRightMotor.setPower(rightPower);//replace left stick y with right stick y if you want more control
-        Robot.backLeftMotor.setPower(leftPower);//replace left stick y with right stick y if you want more control
-
+        
+        Robot.rightFrontMotor.setPower(rightPower);//replace left stick y with right stick y if you want more control
+        Robot.leftFrontMotor.setPower(leftPower);//replace left stick y with right stick y if you want more control
 
 
         //Add more stuff as more things are made. This is for a basic drivetrain. We can change the values to accomodate the drivetrain we are working with.
