@@ -1,12 +1,15 @@
+package org.firstinspires.ftc.teamcode;
+import org.firstinspires.ftc.teamcode.*;
+import org.firstinspires.ftc.teamcode.Auton.Wheel;
+
 /*
  * The Specific Robot Class for FIRE
  * Created by Shourya Bansal
  */
-package org.firstinspires.ftc.teamcode.FIRE;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Wheel;
+
 
 public class Robot {
     //Creates DcMotors
@@ -39,11 +42,11 @@ public class Robot {
     double ticksPerRotation;
 
     //Constructors to create the Robot
-    public Robot(DcMotor rightFrontMotor, DcMotor leftFrontMotor, DcMotor middle_drive, Wheel rightWheel, Wheel leftWheel, Wheel middleWheel, ColorSensor colorSensor, double ticksPerRotation) 
+    public Robot(DcMotor rightFrontMotor, DcMotor leftFrontMotor, DcMotor middle_drive, Wheel rightWheel, Wheel leftWheel, Wheel middleWheel, ColorSensor colorSensor, double ticksPerRotation)
     {
-        this.rightFrontMotor = rightMotor;
-        this.leftMotor = leftFrontMotor;
-        this.middleMotor = middle_drive;
+        this.rightFrontMotor = rightFrontMotor;
+        this.leftFrontMotor = leftFrontMotor;
+        this.middle_drive= middle_drive;
         //this.elevatorMotor = elevator;
         this.rightWheel = rightWheel;
         this.leftWheel = leftWheel;
@@ -58,9 +61,9 @@ public class Robot {
         this.ticksPerRotation = ticksPerRotation;
     }
     public Robot(DcMotor rightFrontMotor, DcMotor leftFrontMotor, DcMotor middle_drive, Wheel rightWheel, Wheel leftWheel, Wheel middleWheel, double ticksPerRotation) {
-        this.rightFrontMotor = rightMotor;
-        this.leftFrontMotor = leftMotor;
-        this.middle_drive = middleMotor;
+        this.rightFrontMotor = rightFrontMotor;
+        this.leftFrontMotor = leftFrontMotor;
+        this.middle_drive = middle_drive;
         this.rightWheel = rightWheel;
         this.leftWheel = leftWheel;
         this.middleWheel = middleWheel;
@@ -154,7 +157,7 @@ public class Robot {
         middle_drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         rightFrontMotor.setTargetPosition(roundedYTicks);
-        leftMotor.setTargetPosition(roundedYTicks);
+        leftFrontMotor.setTargetPosition(roundedYTicks);
         middle_drive.setTargetPosition(roundedXTicks);
     }
 
@@ -165,7 +168,7 @@ public class Robot {
         leftFrontMotor.setPower(0);
         rightFrontMotor.setPower(0);
         //Has motors run until position is reached
-        while(middleMotor.isBusy()){
+        while(middle_drive.isBusy()){
             //Waits
         }
 
@@ -184,7 +187,7 @@ public class Robot {
         leftFrontMotor.setPower(power);
         rightFrontMotor.setPower((-1*power));
         //Has motors run until position is reached
-        while(leftMotor.isBusy()){
+        while(leftFrontMotor.isBusy()){
             //Waits
         }
 
@@ -202,7 +205,7 @@ public class Robot {
         leftFrontMotor.setPower((-1*power));
         rightFrontMotor.setPower(power);
         //Has motors run until position is reached
-        while(leftMotor.isBusy()){
+        while(leftFrontMotor.isBusy()){
             //Waits
         }
 
