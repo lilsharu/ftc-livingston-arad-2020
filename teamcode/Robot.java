@@ -10,10 +10,10 @@ import org.firstinspires.ftc.teamcode.Wheel;
 
 public class Robot {
     //Creates DcMotors
-    private DcMotor rightMotor;
-    private DcMotor leftMotor;
-    private DcMotor middleMotor;
-    private DcMotor elevatorMotor;
+    private DcMotor rightFrontMotor;
+    private DcMotor leftFrontMotor;
+    private DcMotor middle_drive;
+    //private DcMotor elevatorMotor;
 
     //Creates Corresponding Wheels
     private Wheel rightWheel;
@@ -21,14 +21,14 @@ public class Robot {
     private Wheel middleWheel;
 
     //Creates Sensor to Direct
-    private ColorSensor leftColor;
-    private ColorSensor rightColor;
-
+    private ColorSensor colorSensor;
+    //private ColorSensor rightColor;
+/*
     //Creates Servos which are being used
     private Servo clawServo;
     private Servo rightPlateServo;
     private Servo leftServo;
-
+*/
     //Creates an array to store the robot's position after every movement
     double[] position = new double[2];
 
@@ -39,25 +39,28 @@ public class Robot {
     double ticksPerRotation;
 
     //Constructors to create the Robot
-    public Robot(DcMotor rightMotor, DcMotor leftMotor, DcMotor middleMotor, DcMotor elevator, Wheel rightWheel, Wheel leftWheel, Wheel middleWheel, ColorSensor leftColor, ColorSensor rightColor, Servo clawServo, Servo rightPlateServo, Servo leftPlateServo, double ticksPerRotation) {
-        this.rightMotor = rightMotor;
-        this.leftMotor = leftMotor;
-        this.middleMotor = middleMotor;
-        this.elevatorMotor = elevator;
+    public Robot(DcMotor rightFrontMotor, DcMotor leftFrontMotor, DcMotor middle_drive, Wheel rightWheel, Wheel leftWheel, Wheel middleWheel, ColorSensor colorSensor, double ticksPerRotation) 
+    {
+        this.rightFrontMotor = rightMotor;
+        this.leftMotor = leftFrontMotor;
+        this.middleMotor = middle_drive;
+        //this.elevatorMotor = elevator;
         this.rightWheel = rightWheel;
         this.leftWheel = leftWheel;
         this.middleWheel = middleWheel;
-        this.leftColor = leftColor;
-        this.rightColor = rightColor;
+        //this.leftColor = leftColor;
+        this.colorSensor = colorSensor;
+        /*
         this.clawServo = clawServo;
         this.rightPlateServo = rightPlateServo;
         this.leftServo = leftPlateServo;
+        */
         this.ticksPerRotation = ticksPerRotation;
     }
-    public Robot(DcMotor rightMotor, DcMotor leftMotor, DcMotor middleMotor, Wheel rightWheel, Wheel leftWheel, Wheel middleWheel, double ticksPerRotation) {
-        this.rightMotor = rightMotor;
-        this.leftMotor = leftMotor;
-        this.middleMotor = middleMotor;
+    public Robot(DcMotor rightFrontMotor, DcMotor leftFrontMotor, DcMotor middle_drive, Wheel rightWheel, Wheel leftWheel, Wheel middleWheel, double ticksPerRotation) {
+        this.rightFrontMotor = rightMotor;
+        this.leftFrontMotor = leftMotor;
+        this.middle_drive = middleMotor;
         this.rightWheel = rightWheel;
         this.leftWheel = leftWheel;
         this.middleWheel = middleWheel;
@@ -66,17 +69,17 @@ public class Robot {
 
     //Initializes Robot
     HardwareMap hardwareMap;
-    public void init(HardwareMap aHardwareMap) {
-        hardwareMap = aHardwareMap;
-        leftMotor = hardwareMap.get(DcMotor.class, "Left Motor");
-        rightMotor = hardwareMap.get(DcMotor.class, "Right Motor");
-        middleMotor = hardwareMap.get(DcMotor.class, "Middle Motor");
+    public void init(HardwareMap HardwareMap) {
+        hardwareMap = HardwareMap;
+        leftFrontMotor = hardwareMap.get(DcMotor.class, "leftFrontMotor");
+        rightFrontMotor = hardwareMap.get(DcMotor.class, "rightFrontMotor");
+        middle_drive = hardwareMap.get(DcMotor.class, "middle_drive");
         //elevatorMotor = hardwareMap.get(DcMotor.class, "Claw Motor");
 
         //this is guess and test, change if necessary
-        leftMotor.setDirection(DcMotor.Direction.FORWARD);
-        rightMotor.setDirection(DcMotor.Direction.REVERSE);
-        middleMotor.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontMotor.setDirection(DcMotor.Direction.FORWARD);
+        middle_drive.setDirection(DcMotor.Direction.FORWARD);
         //elevatorMotor.setDirection(DcMotor.Direction.FORWARD);
     }
 
@@ -85,8 +88,8 @@ public class Robot {
         motor.setPower(power);
     }
     public void setForwardPower(double power) {
-        rightMotor.setPower(power);
-        leftMotor.setPower(power);
+        rightFrontMotor.setPower(power);
+        leftFrontMotor.setPower(power);
     }
     public void turn(double power, String directionInp) {
         String direction = direction(directionInp);
@@ -98,11 +101,11 @@ public class Robot {
                 setForwardPower(-power);
                 break;
             case "l":
-                leftMotor.setPower(power);
-                rightMotor.setPower(-power);
+                leftFrontMotor.setPower(power);
+                rightFrontMotor.setPower(-power);
             case "r":
-                leftMotor.setPower(-power);
-                rightMotor.setPower(power);
+                leftFrontMotor.setPower(-power);
+                rightFrontMotor.setPower(power);
             default:
                 break;
         }
@@ -114,15 +117,15 @@ public class Robot {
         turn(power, "l");
     }
     public void strafe(double power) {
-        middleMotor.setPower(power);
+        middle_drive.setPower(power);
     }
     public void move(double power, double angle){
         double xPower = power * Math.cos(angle);
         double yPower = power * Math.sin(angle);
 
-        rightMotor.setPower(yPower);
-        leftMotor.setPower(yPower);
-        middleMotor.setPower(xPower);
+        rightFrontMotor.setPower(yPower);
+        leftFrontMotor.setPower(yPower);
+        middle_drive.setPower(xPower);
     }
     public void moveDegrees(double power, double angle) {
         move(power, Math.toRadians(angle));
@@ -146,21 +149,21 @@ public class Robot {
         int roundedYTicks = round(yTicks);
         int roundedXTicks = round(xTicks);
 
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        middleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        middle_drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        rightMotor.setTargetPosition(roundedYTicks);
+        rightFrontMotor.setTargetPosition(roundedYTicks);
         leftMotor.setTargetPosition(roundedYTicks);
-        middleMotor.setTargetPosition(roundedXTicks);
+        middle_drive.setTargetPosition(roundedXTicks);
     }
 
     public void moveSideways(double power, int distance){
         SetUpEncodersForDistance(distance);
         //set drive power
-        middleMotor.setPower(power);
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
+        middle_drive.setPower(power);
+        leftFrontMotor.setPower(0);
+        rightFrontMotor.setPower(0);
         //Has motors run until position is reached
         while(middleMotor.isBusy()){
             //Waits
@@ -169,17 +172,17 @@ public class Robot {
         //Stops driving
         turnOff();
         //Changes mode back to normal
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
-        middleMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        middle_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void moveFoward(double power, int distance){
         SetUpEncodersForDistance(distance);
         //set drive power
-        middleMotor.setPower(0);
-        leftMotor.setPower(power);
-        rightMotor.setPower((-1*power));
+        middle_drive.setPower(0);
+        leftFrontMotor.setPower(power);
+        rightFrontMotor.setPower((-1*power));
         //Has motors run until position is reached
         while(leftMotor.isBusy()){
             //Waits
@@ -188,16 +191,16 @@ public class Robot {
         //Stops driving
         turnOff();
         //Changes mode back to normal
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
-        middleMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        middle_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void moveBackwards(double power, int distance){
         SetUpEncodersForDistance(distance);
         //set drive power
-        middleMotor.setPower(0);
-        leftMotor.setPower((-1*power));
-        rightMotor.setPower(power);
+        middle_drive.setPower(0);
+        leftFrontMotor.setPower((-1*power));
+        rightFrontMotor.setPower(power);
         //Has motors run until position is reached
         while(leftMotor.isBusy()){
             //Waits
@@ -206,36 +209,36 @@ public class Robot {
         //Stops driving
         turnOff();
         //Changes mode back to normal
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
-        middleMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        middle_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void SetUpEncodersForDistance(int distance){
         //Reset encoder values
-        leftMotor.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        rightMotor.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        middleMotor.setMode(DcMotor.RunMode.RESET_ENCODERS);
+        leftFrontMotor.setMode(DcMotor.RunMode.RESET_ENCODERS);
+        rightFrontMotor.setMode(DcMotor.RunMode.RESET_ENCODERS);
+        middle_drive.setMode(DcMotor.RunMode.RESET_ENCODERS);
         //Set target position
-        leftMotor.setTargetPosition(distance);
-        rightMotor.setTargetPosition(distance);
-        middleMotor.setTargetPosition(distance);
+        leftFrontMotor.setTargetPosition(distance);
+        rightFrontMotor.setTargetPosition(distance);
+        middle_drive.setTargetPosition(distance);
         //Switch to position mode
-        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        middleMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        middle_drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
     }
     public void moveRight(double power){
-        rightMotor.setPower(power);
-        leftMotor.setPower(0);
-        middleMotor.setPower(0);
+        rightFrontMotor.setPower(power);
+        leftFrontMotor.setPower(0);
+        middle_drive.setPower(0);
     }
     //Could use this instead of individual turning methods
     public void turnOff(){
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
-        middleMotor.setPower(0);
+        leftFrontMotor.setPower(0);
+        rightFrontMotor.setPower(0);
+        middle_drive.setPower(0);
     }
 
 
