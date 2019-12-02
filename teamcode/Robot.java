@@ -249,8 +249,10 @@ public class Robot {
             middleMotor.setTargetPosition(roundedXTicks);
 
             setRobotPower(power);
+            position[0] += xDistance;
+            position[1] += yDistance;
         }
-        public void moveSideways(double power, int distance){
+        public void moveSideways(double power, double distance){
             setUpEncodersForDistance(distance);
             //set drive power
             middleMotor.setPower(power);
@@ -260,13 +262,14 @@ public class Robot {
             while(middleMotor.isBusy()){
                 //Waits
             }
-
+            //updates position
+            position[0] += distance;
             //Stops driving
             turnOff();
             //Changes mode back to normal
             setRunMode("u");
         }
-        public void moveFoward(double power, int distance){
+        public void moveFoward(double power, double distance){
             setUpEncodersForDistance(distance);
             //set drive power
             middleMotor.setPower(0);
@@ -276,46 +279,49 @@ public class Robot {
             while(leftMotor.isBusy()){
                 //Waits
             }
+            //Updates Position
+            position[1] += distance;
             //Stops driving
             turnOff();
             setRunMode("u");
         }
-        public void moveBackwards(double power, int distance){
+        public void moveBackwards(double power, double distance){
             setUpEncodersForDistance(distance);
             //set drive power
             middleMotor.setPower(0);
-            leftMotor.setPower((-power));
-            rightMotor.setPower(power);
+            leftMotor.setPower(-power);
+            rightMotor.setPower(-power);
             //Has motors run until position is reached
             while(leftMotor.isBusy()){
                 //Waits
             }
-
+            position[1] -= distance;
             //Stops driving
             turnOff();
             //Changes mode back to normal
             //Reset encoder values
             setRunMode("u");
         }
-        public void setUpEncodersForDistance(int distance){
-            //Reset encoder values
-            setRunMode("s");
+        public void setUpEncodersForDistance(double distance){
+            //Switch to position mode encoder values
+            setRunMode("p");
             //Set target position
             leftMotor.setTargetPosition(leftWheel.getNumOfTicks(distance));
             rightMotor.setTargetPosition(rightWheel.getNumOfTicks(distance));
             middleMotor.setTargetPosition(middleWheel.getNumOfTicks(distance));
-            //Switch to position mode
-            setRunMode("p");
         }
-        public void moveRight(double power){
+        public void turnRight(double power, double distance){
+            setUpEncodersForDistance(distance);
             rightMotor.setPower(power);
-            leftMotor.setPower(0);
+            leftMotor.setPower(-power);
             middleMotor.setPower(0);
         }
+
         //Could use this instead of individual turning methods
         public void turnOff(){
             leftMotor.setPower(0);
             rightMotor.setPower(0);
             middleMotor.setPower(0);
         }
+
 }
