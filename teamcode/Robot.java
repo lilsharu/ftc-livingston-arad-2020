@@ -1,9 +1,8 @@
 /*
  * The Specific Robot Class for FIRE
- * Created by Shourya Bansal and Ally Mintz
+ * Created by Shourya Bansal
  */
 package org.firstinspires.ftc.teamcode;
-import org.firstinspires.ftc.teamcode.*;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -80,7 +79,7 @@ public class Robot {
             this.leftMotor = leftMotor;
             this.middleMotor = middleMotor;
             this.rightWheel = new Wheel(96, 2240, "Right Wheel", "Omni", "mm");
-            this.leftWheel = new Wheel(96, 2240, "Left Wheel", "Omni", "mm");;
+            this.leftWheel = new Wheel(96, 2240, "Left Wheel", "Omni", "mm");
             this.middleWheel = new Wheel(96, 1120, "Middle Wheel", "Omni", "mm");
             this.ticksPerRotationForward = ticksPerRotation;
             this.ticksPerRotationSideways = 0.5 * ticksPerRotation;
@@ -88,9 +87,9 @@ public class Robot {
         public Robot(double ticksPerRotation) {
             ticksPerRotationForward = ticksPerRotation;
             ticksPerRotationSideways = 0.5 * ticksPerRotation;
-            this.rightWheel = new Wheel(96, 2240, "Right Wheel", "Omni", "mm");
-            this.leftWheel = new Wheel(96, 2240, "Left Wheel", "Omni", "mm");;
-            this.middleWheel = new Wheel(96, 1120, "Middle Wheel", "Omni", "mm");
+            this.rightWheel = new Wheel(96, Convert.round(ticksPerRotationForward), "Right Wheel", "Omni", "mm");
+            this.leftWheel = new Wheel(96, Convert.round(ticksPerRotationForward), "Left Wheel", "Omni", "mm");
+            this.middleWheel = new Wheel(96, Convert.round(ticksPerRotationSideways), "Middle Wheel", "Omni", "mm");
         }
 
     //Initializes Robot
@@ -166,19 +165,19 @@ public class Robot {
                     break;
             }
         }
-        public void setMotorPower(DcMotor motor, double power) {
-            motor.setPower(power);
-        }
         public void setRobotPower(double power) {
-            setForwardPower(power);
-            strafe(power);
+            double sPower = power * .9;
+            setForwardPower(sPower);
+            strafe(sPower);
         }
         public void setForwardPower(double power) {
-            rightMotor.setPower(power);
-            leftMotor.setPower(power);
+            double sPower = power * .9;
+            rightMotor.setPower(sPower);
+            leftMotor.setPower(sPower);
         }
         public void turn(double power, String directionInp) {
             String direction = Convert.direction(directionInp);
+            power *= 0.9;
             switch (direction) {
                 case "f":
                     setForwardPower(power);
@@ -199,15 +198,19 @@ public class Robot {
             }
         }
         public void turnRight(double power) {
+            power *= 0.9;
             turn(power, "r");
         }
         public void turnLeft(double power) {
+            power *= 0.9;
             turn(power, "l");
         }
         public void strafe(double power) {
+            power *= 0.9;
             middleMotor.setPower(power);
         }
         public void move(double power, double angle){
+            power *= 0.9;
             double xPower = power * Math.cos(angle);
             double yPower = power * Math.sin(angle);
 
@@ -221,9 +224,22 @@ public class Robot {
         public void move(double power, double x, double y) {
             move(power, Convert.angle(x, y));
         }
+        public void setRightPower(double power) {
+            power *= 0.9;
+            rightMotor.setPower(power);
+        }
+        public void setLeftPower(double power) {
+            power *= 0.9;
+            leftMotor.setPower(power);
+        }
+        public void setMiddlePower(double power) {
+            power *= 0.9;
+            middleMotor.setPower(power);
+        }
 
     //Autonomous Movement
         public void moveAuton(double distance, double angle, double power, String unit) {
+            power *= 0.9;
             //uses trig and physics to divide distance vector into x and y components
             double xDistance = distance * Math.cos(angle);
             double yDistance = distance * Math.sin(angle);
@@ -253,6 +269,7 @@ public class Robot {
             position[1] += yDistance;
         }
         public void moveSideways(double power, double distance){
+            power *= 0.9;
             setUpEncodersForDistance(distance);
             //set drive power
             middleMotor.setPower(power);
@@ -270,6 +287,7 @@ public class Robot {
             setRunMode("u");
         }
         public void moveFoward(double power, double distance){
+            power *= 0.9;
             setUpEncodersForDistance(distance);
             //set drive power
             middleMotor.setPower(0);
@@ -286,6 +304,7 @@ public class Robot {
             setRunMode("u");
         }
         public void moveBackwards(double power, double distance){
+            power *= 0.9;
             setUpEncodersForDistance(distance);
             //set drive power
             middleMotor.setPower(0);
@@ -311,6 +330,7 @@ public class Robot {
             middleMotor.setTargetPosition(middleWheel.getNumOfTicks(distance));
         }
         public void turnRight(double power, double distance){
+            power *= 0.9;
             setUpEncodersForDistance(distance);
             rightMotor.setPower(power);
             leftMotor.setPower(-power);
@@ -323,5 +343,4 @@ public class Robot {
             rightMotor.setPower(0);
             middleMotor.setPower(0);
         }
-
 }
