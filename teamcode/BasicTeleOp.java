@@ -84,6 +84,7 @@ public class BasicTeleOp extends OpMode {
         double deadZone = 0.1;
         double rightPower =0;
         double leftPower = 0;
+        Robot.middle_drive.setPower(0);
 
         //If only forward motion is being applied
         if (Math.abs(G1leftStickX) <= deadZone && G1leftStickY > deadZone) {
