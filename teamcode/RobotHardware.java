@@ -1,6 +1,6 @@
 /*
  * The Robot Hardware code for the Livingston-Arad
- * Created by Team Member Aryan Bansal
+ * Created by Team Member Shourya Bansal and edited by Aryan Bansal
  */
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
