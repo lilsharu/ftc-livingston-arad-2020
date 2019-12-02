@@ -94,9 +94,9 @@ public class Robot {
 
     //Initializes Robot
         public void init(HardwareMap hardwareMap) {
-            leftMotor = hardwareMap.get(DcMotor.class, "Left Motor");
-            rightMotor = hardwareMap.get(DcMotor.class, "Right Motor");
-            middleMotor = hardwareMap.get(DcMotor.class, "Middle Motor");
+            leftMotor = hardwareMap.get(DcMotor.class, "leftFrontMotor");
+            rightMotor = hardwareMap.get(DcMotor.class, "rightFrontMotor");
+            middleMotor = hardwareMap.get(DcMotor.class, "middle_drive");
             //elevatorMotor = hardwareMap.get(DcMotor.class, "Claw Motor");
 
             //this is guess and test, change if necessary
