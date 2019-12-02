@@ -2,21 +2,20 @@
  * The Specific Robot Class for FIRE
  * Created by Shourya Bansal and Ally Mintz
  */
-
 package org.firstinspires.ftc.teamcode;
 import org.firstinspires.ftc.teamcode.*;
-import org.firstinspires.ftc.teamcode.Auton.Wheel;
-import com.qualcomm.robotcore.hardware.*;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-
 
 public class Robot {
     //Creates DcMotors
-    private DcMotor rightFrontMotor;
-    private DcMotor leftFrontMotor;
-    private DcMotor middle_drive;
-    //private DcMotor elevatorMotor;
+    private DcMotor rightMotor;
+    private DcMotor leftMotor;
+    private DcMotor middleMotor;
+    private DcMotor elevatorMotor;
 
     //Creates Corresponding Wheels
     private Wheel rightWheel;
@@ -24,298 +23,299 @@ public class Robot {
     private Wheel middleWheel;
 
     //Creates Sensor to Direct
-    private ColorSensor colorSensor;
-    //private ColorSensor rightColor;
-/*
+    private ColorSensor leftColor;
+    private ColorSensor rightColor;
+
     //Creates Servos which are being used
     private Servo clawServo;
-    private Servo rightPlateServo;
+    private Servo rightServo;
     private Servo leftServo;
-*/
+
+    public static final double SERVO_INIT_POS = 0;
+    public static final double SERVO_OPEN_POS = 1;
+
     //Creates an array to store the robot's position after every movement
     double[] position = new double[2];
 
     //Creates a timer to calculate elapsed time
     ElapsedTime runtime = new ElapsedTime();
 
+    //Two color sensors
+    private ColorSensor leftSensor;
+    private ColorSensor rightSensor;
+
     //Variables and values which we need to know
-    double ticksPerRotation;
+    private double ticksPerRotationForward;
+    private double ticksPerRotationSideways;
 
     //Constructors to create the Robot
-    public Robot(DcMotor rightFrontMotor, DcMotor leftFrontMotor, DcMotor middle_drive, Wheel rightWheel, Wheel leftWheel, Wheel middleWheel, ColorSensor colorSensor, double ticksPerRotation)
-    {
-        this.rightFrontMotor = rightFrontMotor;
-        this.leftFrontMotor = leftFrontMotor;
-        this.middle_drive= middle_drive;
-        //this.elevatorMotor = elevator;
-        this.rightWheel = rightWheel;
-        this.leftWheel = leftWheel;
-        this.middleWheel = middleWheel;
-        //this.leftColor = leftColor;
-        this.colorSensor = colorSensor;
-        /*
-        this.clawServo = clawServo;
-        this.rightPlateServo = rightPlateServo;
-        this.leftServo = leftPlateServo;
-        */
-        this.ticksPerRotation = ticksPerRotation;
-    }
-    public Robot(DcMotor rightFrontMotor, DcMotor leftFrontMotor, DcMotor middle_drive, Wheel rightWheel, Wheel leftWheel, Wheel middleWheel, double ticksPerRotation) {
-        this.rightFrontMotor = rightFrontMotor;
-        this.leftFrontMotor = leftFrontMotor;
-        this.middle_drive = middle_drive;
-        this.rightWheel = rightWheel;
-        this.leftWheel = leftWheel;
-        this.middleWheel = middleWheel;
-        this.ticksPerRotation = ticksPerRotation;
-    }
+        public Robot(DcMotor rightMotor, DcMotor leftMotor, DcMotor middleMotor, DcMotor elevator, Wheel rightWheel, Wheel leftWheel, Wheel middleWheel, ColorSensor leftColor, ColorSensor rightColor, Servo clawServo, Servo rightPlateServo, Servo leftPlateServo, double ticksPerRotation) {
+            this.rightMotor = rightMotor;
+            this.leftMotor = leftMotor;
+            this.middleMotor = middleMotor;
+            this.elevatorMotor = elevator;
+            this.rightWheel = rightWheel;
+            this.leftWheel = leftWheel;
+            this.middleWheel = middleWheel;
+            this.leftColor = leftColor;
+            this.rightColor = rightColor;
+            this.clawServo = clawServo;
+            this.rightServo = rightPlateServo;
+            this.leftServo = leftPlateServo;
+            this.ticksPerRotationForward = ticksPerRotation;
+            this.ticksPerRotationSideways = ticksPerRotation * 0.5;
+        }
+        public Robot(DcMotor rightMotor, DcMotor leftMotor, DcMotor middleMotor, Wheel rightWheel, Wheel leftWheel, Wheel middleWheel, double ticksPerRotation) {
+            this.rightMotor = rightMotor;
+            this.leftMotor = leftMotor;
+            this.middleMotor = middleMotor;
+            this.rightWheel = rightWheel;
+            this.leftWheel = leftWheel;
+            this.middleWheel = middleWheel;
+            this.ticksPerRotationForward = ticksPerRotation;
+            this.ticksPerRotationSideways = 0.5 * ticksPerRotation;
+        }
+        public Robot(DcMotor rightMotor, DcMotor leftMotor, DcMotor middleMotor, double ticksPerRotation) {
+            this.rightMotor = rightMotor;
+            this.leftMotor = leftMotor;
+            this.middleMotor = middleMotor;
+            this.rightWheel = new Wheel(96, 2240, "Right Wheel", "Omni", "mm");
+            this.leftWheel = new Wheel(96, 2240, "Left Wheel", "Omni", "mm");;
+            this.middleWheel = new Wheel(96, 1120, "Middle Wheel", "Omni", "mm");
+            this.ticksPerRotationForward = ticksPerRotation;
+            this.ticksPerRotationSideways = 0.5 * ticksPerRotation;
+        }
+        public Robot(double ticksPerRotation) {
+            ticksPerRotationForward = ticksPerRotation;
+            ticksPerRotationSideways = 0.5 * ticksPerRotation;
+            this.rightWheel = new Wheel(96, 2240, "Right Wheel", "Omni", "mm");
+            this.leftWheel = new Wheel(96, 2240, "Left Wheel", "Omni", "mm");;
+            this.middleWheel = new Wheel(96, 1120, "Middle Wheel", "Omni", "mm");
+        }
 
     //Initializes Robot
-    HardwareMap hardwareMap;
-    public void init(HardwareMap HardwareMap) {
-        hardwareMap = HardwareMap;
-        leftFrontMotor = hardwareMap.get(DcMotor.class, "leftFrontMotor");
-        rightFrontMotor = hardwareMap.get(DcMotor.class, "rightFrontMotor");
-        middle_drive = hardwareMap.get(DcMotor.class, "middle_drive");
-        //elevatorMotor = hardwareMap.get(DcMotor.class, "Claw Motor");
+        public void init(HardwareMap hardwareMap) {
+            leftMotor = hardwareMap.get(DcMotor.class, "Left Motor");
+            rightMotor = hardwareMap.get(DcMotor.class, "Right Motor");
+            middleMotor = hardwareMap.get(DcMotor.class, "Middle Motor");
+            //elevatorMotor = hardwareMap.get(DcMotor.class, "Claw Motor");
 
-        //this is guess and test, change if necessary
-        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontMotor.setDirection(DcMotor.Direction.FORWARD);
-        middle_drive.setDirection(DcMotor.Direction.FORWARD);
-        //elevatorMotor.setDirection(DcMotor.Direction.FORWARD);
-    }
+            //this is guess and test, change if necessary
+            leftMotor.setDirection(DcMotor.Direction.FORWARD);
+            rightMotor.setDirection(DcMotor.Direction.REVERSE);
+            middleMotor.setDirection(DcMotor.Direction.REVERSE);
+            //elevatorMotor.setDirection(DcMotor.Direction.FORWARD);
 
-    //Setters for Motor Power
-    public void setMotorPower(DcMotor motor, double power) {
-        motor.setPower(power);
-    }
-    public void setForwardPower(double power) {
-        rightFrontMotor.setPower(power);
-        leftFrontMotor.setPower(power);
-    }
-    public void turn(double power, String directionInp) {
-        String direction = direction(directionInp);
-        switch (direction) {
-            case "f":
-                setForwardPower(power);
-                break;
-            case "b":
-                setForwardPower(-power);
-                break;
-            case "l":
-                leftFrontMotor.setPower(power);
-                rightFrontMotor.setPower(-power);
-            case "r":
-                leftFrontMotor.setPower(-power);
-                rightFrontMotor.setPower(power);
-            default:
-                break;
+            turnOff();//Sets all motor powers to zero
+            //Runs Using Encoders (The Standard)
+            setRunMode("using");
+
+            //brakes the motors and sets active resistance when power is zero
+            leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            middleMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            //Now Servos
+            clawServo = hardwareMap.get(Servo.class, "Claw Servo");
+            rightServo = hardwareMap.get(Servo.class, "Right Servo");
+            leftServo = hardwareMap.get(Servo.class, "Left Servo");
+
+            clawServo.setPosition(SERVO_INIT_POS);
+            leftServo.setPosition(SERVO_INIT_POS);
+            rightServo.setPosition(SERVO_INIT_POS);
+
+            leftColor = hardwareMap.get(ColorSensor.class, "Left Color");
+            rightColor = hardwareMap.get(ColorSensor.class, "Right Color");
         }
-    }
-    public void turnRight(double power) {
-        turn(power, "r");
-    }
-    public void turnLeft(double power) {
-        turn(power, "l");
-    }
-    public void strafe(double power) {
-        middle_drive.setPower(power);
-    }
-    public void move(double power, double angle){
-        double xPower = power * Math.cos(angle);
-        double yPower = power * Math.sin(angle);
 
-        rightFrontMotor.setPower(yPower);
-        leftFrontMotor.setPower(yPower);
-        middle_drive.setPower(xPower);
-    }
-    public void moveDegrees(double power, double angle) {
-        move(power, Math.toRadians(angle));
-    }
+    //Setters for Motor Power and Mode
+        //speeds up runMode setting
+        public void setRunMode(String mode) {
+            String runMode = Convert.runMode(mode);
+            switch (runMode){
+                case "using":
+                    setRunMode("s");
+                    leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    middleMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    break;
+                case "position":
+                    setRunMode("s");
+                    leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    middleMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    break;
+                case "without":
+                    setRunMode("s");
+                    leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    middleMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    break;
+                case "stop and reset":
+                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    middleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    break;
+                default:
+                    leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    middleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    middleMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    break;
+            }
+        }
+        public void setMotorPower(DcMotor motor, double power) {
+            motor.setPower(power);
+        }
+        public void setRobotPower(double power) {
+            setForwardPower(power);
+            strafe(power);
+        }
+        public void setForwardPower(double power) {
+            rightMotor.setPower(power);
+            leftMotor.setPower(power);
+        }
+        public void turn(double power, String directionInp) {
+            String direction = Convert.direction(directionInp);
+            switch (direction) {
+                case "f":
+                    setForwardPower(power);
+                    break;
+                case "b":
+                    setForwardPower(-power);
+                    break;
+                case "l":
+                    leftMotor.setPower(power);
+                    rightMotor.setPower(-power);
+                    break;
+                case "r":
+                    leftMotor.setPower(-power);
+                    rightMotor.setPower(power);
+                    break;
+                default:
+                    break;
+            }
+        }
+        public void turnRight(double power) {
+            turn(power, "r");
+        }
+        public void turnLeft(double power) {
+            turn(power, "l");
+        }
+        public void strafe(double power) {
+            middleMotor.setPower(power);
+        }
+        public void move(double power, double angle){
+            double xPower = power * Math.cos(angle);
+            double yPower = power * Math.sin(angle);
+
+            rightMotor.setPower(yPower);
+            leftMotor.setPower(yPower);
+            middleMotor.setPower(xPower);
+        }
+        public void moveDegrees(double power, double angle) {
+            move(power, Math.toRadians(angle));
+        }
+        public void move(double power, double x, double y) {
+            move(power, Convert.angle(x, y));
+        }
 
     //Autonomous Movement
-    public void moveAuton(double distance, double angle, String unit) {
-        //uses trig and physics to divide distance vector into x and y components
-        double xDistance = distance * Math.cos(angle);
-        double yDistance = distance * Math.sin(angle);
+        public void moveAuton(double distance, double angle, double power, String unit) {
+            //uses trig and physics to divide distance vector into x and y components
+            double xDistance = distance * Math.cos(angle);
+            double yDistance = distance * Math.sin(angle);
 
-        //Calculates Number of Rotations Necessary
-        double yRotations = middleWheel.getNumOfRots(xDistance, unit);
-        double xRotations = rightWheel.getNumOfRots(yDistance, unit);
+            //Calculates Number of Rotations Necessary
+            //y is forward/backwards, x is left/right
+            double yRotations = rightWheel.getNumOfRots(yDistance, unit);
+            double xRotations = middleWheel.getNumOfRots(xDistance, unit);
 
-        //Calculates ticks to get that movement
-        double yTicks = yRotations * ticksPerRotation;
-        double xTicks = xDistance * ticksPerRotation;
+            //Calculates ticks to get that movement
+            double yTicks = yRotations * ticksPerRotationForward;
+            double xTicks = xRotations * ticksPerRotationSideways;
 
-        //rounds the ticks:
-        int roundedYTicks = round(yTicks);
-        int roundedXTicks = round(xTicks);
+            //rounds the ticks:
+            int roundedYTicks = Convert.round(yTicks);
+            int roundedXTicks = Convert.round(xTicks);
 
-        rightFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        middle_drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            //Sets it to run to position
+            setRunMode("p");
 
-        rightFrontMotor.setTargetPosition(roundedYTicks);
-        leftFrontMotor.setTargetPosition(roundedYTicks);
-        middle_drive.setTargetPosition(roundedXTicks);
-    }
+            rightMotor.setTargetPosition(roundedYTicks);
+            leftMotor.setTargetPosition(roundedYTicks);
+            middleMotor.setTargetPosition(roundedXTicks);
 
-    public void moveSideways(double power, int distance){
-        SetUpEncodersForDistance(distance);
-        //set drive power
-        middle_drive.setPower(power);
-        leftFrontMotor.setPower(0);
-        rightFrontMotor.setPower(0);
-        //Has motors run until position is reached
-        while(middle_drive.isBusy()){
-            //Waits
+            setRobotPower(power);
         }
+        public void moveSideways(double power, int distance){
+            setUpEncodersForDistance(distance);
+            //set drive power
+            middleMotor.setPower(power);
+            leftMotor.setPower(0);
+            rightMotor.setPower(0);
+            //Has motors run until position is reached
+            while(middleMotor.isBusy()){
+                //Waits
+            }
 
-        //Stops driving
-        turnOff();
-        //Changes mode back to normal
-        leftFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
-        rightFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
-        middle_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
+            //Stops driving
+            turnOff();
+            //Changes mode back to normal
+            setRunMode("u");
+        }
+        public void moveFoward(double power, int distance){
+            setUpEncodersForDistance(distance);
+            //set drive power
+            middleMotor.setPower(0);
+            leftMotor.setPower(power);
+            rightMotor.setPower(power);
+            //Has motors run until position is reached
+            while(leftMotor.isBusy()){
+                //Waits
+            }
+            //Stops driving
+            turnOff();
+            setRunMode("u");
+        }
+        public void moveBackwards(double power, int distance){
+            setUpEncodersForDistance(distance);
+            //set drive power
+            middleMotor.setPower(0);
+            leftMotor.setPower((-power));
+            rightMotor.setPower(power);
+            //Has motors run until position is reached
+            while(leftMotor.isBusy()){
+                //Waits
+            }
 
-    public void moveFoward(double power, int distance){
-        SetUpEncodersForDistance(distance);
-        //set drive power
-        middle_drive.setPower(0);
-        leftFrontMotor.setPower(power);
-        rightFrontMotor.setPower((-1*power));
-        //Has motors run until position is reached
-        while(leftFrontMotor.isBusy()){
-            //Waits
+            //Stops driving
+            turnOff();
+            //Changes mode back to normal
+            //Reset encoder values
+            setRunMode("u");
         }
-
-        //Stops driving
-        turnOff();
-        //Changes mode back to normal
-        leftFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
-        rightFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
-        middle_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-    public void moveBackwards(double power, int distance){
-        SetUpEncodersForDistance(distance);
-        //set drive power
-        middle_drive.setPower(0);
-        leftFrontMotor.setPower((-1*power));
-        rightFrontMotor.setPower(power);
-        //Has motors run until position is reached
-        while(leftFrontMotor.isBusy()){
-            //Waits
+        public void setUpEncodersForDistance(int distance){
+            //Reset encoder values
+            setRunMode("s");
+            //Set target position
+            leftMotor.setTargetPosition(leftWheel.getNumOfTicks(distance));
+            rightMotor.setTargetPosition(rightWheel.getNumOfTicks(distance));
+            middleMotor.setTargetPosition(middleWheel.getNumOfTicks(distance));
+            //Switch to position mode
+            setRunMode("p");
         }
-
-        //Stops driving
-        turnOff();
-        //Changes mode back to normal
-        leftFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
-        rightFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
-        middle_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    public void SetUpEncodersForDistance(int distance){
-        //Reset encoder values
-        leftFrontMotor.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        rightFrontMotor.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        middle_drive.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        //Set target position
-        leftFrontMotor.setTargetPosition(distance);
-        rightFrontMotor.setTargetPosition(distance);
-        middle_drive.setTargetPosition(distance);
-        //Switch to position mode
-        leftFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        middle_drive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-    }
-    public void moveRight(double power){
-        rightFrontMotor.setPower(power);
-        leftFrontMotor.setPower(0);
-        middle_drive.setPower(0);
-    }
-    //Could use this instead of individual turning methods
-    public void turnOff(){
-        leftFrontMotor.setPower(0);
-        rightFrontMotor.setPower(0);
-        middle_drive.setPower(0);
-    }
-
-
-
-    //Deciphering methods and other static methods:
-    public String direction(String directionInput) {
-        if (directionInput.equalsIgnoreCase("right") || directionInput.equalsIgnoreCase("r")){
-            return "r";
+        public void moveRight(double power){
+            rightMotor.setPower(power);
+            leftMotor.setPower(0);
+            middleMotor.setPower(0);
         }
-        else if (directionInput.equalsIgnoreCase("left") || directionInput.equalsIgnoreCase("l")) {
-            return "l";
+        //Could use this instead of individual turning methods
+        public void turnOff(){
+            leftMotor.setPower(0);
+            rightMotor.setPower(0);
+            middleMotor.setPower(0);
         }
-        else if (directionInput.equalsIgnoreCase("back") || directionInput.equalsIgnoreCase("backwards")||directionInput.equalsIgnoreCase("b")) {
-            return "b";
-        }
-        else if (directionInput.equalsIgnoreCase("forward") || directionInput.equalsIgnoreCase("front") || directionInput.equalsIgnoreCase("f")) {
-            return "f";
-        }
-        else {
-            throw new Error ("Your direction couldn't be found. Please try a different direction which is already programmed or add a new case");
-        }
-    }
-    public static int round(double input) {
-        return (int)Math.round(input);
-    }
-    public static double round(double input, int places) {
-        double newNum = input * Math.pow(10, places);
-        newNum += 0.5;
-        newNum = (int)newNum;
-        newNum /= Math.pow(10, places);
-        return newNum;
-    }
-
-    //Other methods
-    public static String usedUnit(String unit) {
-        //Sees if the user put in inches
-        if (unit.equals("\"") || unit.equals("inches") || unit.equals("Inches") || unit.equals("in") || unit.equals("in.")) {
-            return "in";
-        }
-        //Sees if the user put in feet
-        else if (unit.equals("'") || unit.equals("feet") || unit.equals("Feet") || unit.equals("ft") || unit.equals("ft.")) {
-            return "ft";
-        }
-        //Sees if the user put in millimeters
-        else if (unit.equals("mm") || unit.equals("MM") || unit.equals("millimeters") || unit.equals("millimetres") || unit.equals("milimeters") || unit.equals("milli")){
-            return "mm";
-        }
-        //If it is none of the above
-        else {
-            throw new Error("The Unit Chosen Doesn't Match Any of the Options. You said \""
-                    + unit +
-                    "\" but that was not an option");
-        }
-    }
-    public static double convertToInches(double currentValue, String currentUnit) {
-        String unit = usedUnit(currentUnit);
-        //tests each case
-        switch(unit) {
-            case "in":
-                return currentValue;
-            case "ft":
-                return currentValue / 12.0;
-            case "mm":
-                return currentValue / 25.4;
-            default:
-                throw new Error(
-                        "The Unit Chosen Doesn't Match Any of the Options. You said \""
-                                + unit +
-                                "\" but that was not an option");
-        }
-    }
-    public static double convertToMillimeters(double currentValue, String currentUnit){
-        //Sends this to the convertToInches method and converts it to inches, then converts back to millimeters
-        return 25.4 * convertToInches(currentValue, usedUnit(currentUnit));
-    }
-
 }
