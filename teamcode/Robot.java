@@ -1,6 +1,6 @@
 /*
  * The Specific Robot Class for FIRE
- * Created by Shourya Bansal, Aryan Bansal, Ally Mintz
+ * Created by Shourya Bansal and Ally Mintz
  */
 
 package org.firstinspires.ftc.teamcode;
