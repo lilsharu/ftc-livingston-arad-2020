@@ -84,45 +84,45 @@ public class BasicTeleOp extends OpMode {
         double rightPower;
         double leftPower;
 
-        //If only forward motion is being applied
+        //If the Joystick is approximately aligned to the positive Y axis (therefore forward motion is applied)
         if (Math.abs(G1leftStickX) <= deadZone && G1leftStickY > deadZone) {
             rightPower = power;
             leftPower = power;
         }
-        //If the Joystick is in Quadrant II of a coordinate plane
-        else if (G1leftStickX < deadZone && G1leftStickY > deadZone) {
-            rightPower = power;
-            leftPower = 0.5*power;
-        }
-        //If the joystick is just left
-        else if (G1leftStickX > deadZone && Math.abs(G1leftStickY) <= deadZone) {
-            rightPower = power;
-            leftPower = -power;
-        }
-        //if the joystick is in the Third Quadrant
-        else if (G1leftStickX < -deadZone && G1leftStickY < -deadZone) {
-            rightPower = -power;
-            leftPower = -0.5*power;
-        }
-        //If the Joystick is under the origin on the Y axis
+        //If the Joystick is approximately aligned to the negative Y axis (therefore backwards motion is applied)
         else if (Math.abs(G1leftStickX) <= deadZone && G1leftStickY < -deadZone) {
             rightPower = -power;
             leftPower = -power;
         }
-        //If the Joystick is in Quadrant 4
-        else if (G1leftStickX > deadZone && G1leftStickY < deadZone){
-            rightPower = -0.5 * power;
+        //If the Joystick is approximately aligned to the positive X axis (therefore leftwards motion is applied)
+        else if (G1leftStickX > deadZone && Math.abs(G1leftStickY) <= deadZone) {
+            rightPower = power;
             leftPower = -power;
         }
-        //If the joystick is towards the right
+        //If the Joystick is approximately aligned to the negative X axis (therefore rightwards motion is applied)
         else if (G1leftStickX > deadZone && Math.abs(G1leftStickY) <= deadZone) {
             rightPower = -power;
             leftPower = power;
         }
-        //If the Joystick is in the First Quadrant
+        //If the Joystick is aligned to the First Quadrant of the coordinate plane (therefore forwards-left motion is aplied)
         else if (G1leftStickX > deadZone && G1leftStickY > deadZone) {
             rightPower = 0.5 * power;
             leftPower = power;
+        }
+        //If the Joystick is aligned to the Second Quadrant of the coordinate plane (therefore forwards-right motion is aplied)
+        else if (G1leftStickX < deadZone && G1leftStickY > deadZone) {
+            rightPower = power;
+            leftPower = 0.5*power;
+        }
+        //If the Joystick is aligned to the Third Quadrant of the coordinate plane (therefore backwards-right motion is aplied)
+        else if (G1leftStickX < -deadZone && G1leftStickY < -deadZone) {
+            rightPower = -power;
+            leftPower = -0.5*power;
+        }
+        //If the Joystick is aligned to the Fourth Quadrant of the coordinate plane (therefore backwards-left motion is aplied)
+        else if (G1leftStickX > deadZone && G1leftStickY < deadZone){
+            rightPower = -0.5 * power;
+            leftPower = -power;
         }
         else {
             rightPower = 0;
