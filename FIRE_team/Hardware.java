@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -28,9 +31,9 @@ public class Hardware{
     BNO055IMU imu ;
 
 
-    public DcMotor  middleDrive     = null;
+    public DcMotorEx  middleDrive     = null;
     public DcMotor lift_test1 = null;
-    public DcMotor leftDrive = null;
+    public DcMotorEx leftDrive = null;
     public DcMotor griper = null;
     public DcMotor rightDrive = null;
 
@@ -39,7 +42,7 @@ public class Hardware{
     public Servo    catchStone = null;
     public Servo    rightExpantion   = null;
     public Servo    griper_servo = null;
-    public DistanceSensor lift ;
+    //public DistanceSensor lift ;
 
     public static final double startPosition = 0;
     public static final double finalPosition = 0.25;
@@ -68,10 +71,10 @@ public class Hardware{
 
 
         // Define and Initialize Motors
-        leftDrive  = hwMap.get(DcMotor.class, "left_drive");
+        leftDrive  = (DcMotorEx)hwMap.get(DcMotor.class, "left_drive");
         lift_test1 = hwMap.get(DcMotor.class,"lift_test");
         rightDrive = hwMap.get(DcMotor.class, "right_drive");
-        middleDrive = hwMap.get(DcMotor.class, "middle_drive");
+        middleDrive = (DcMotorEx)hwMap.get(DcMotor.class, "middle_drive");
         griper = hwMap.get(DcMotor.class ,"gripper");
 
         rightExpantion = hwMap.get(Servo.class, "right_expansion");
@@ -80,14 +83,14 @@ public class Hardware{
         catchStone = hwMap.get(Servo.class, "catch_Servo");
         griper_servo = hwMap.get(Servo.class ,"gripper_servo");
 
-        lift = hwMap.get(DistanceSensor.class, "lift_ctrl");
+        //lift = hwMap.get(DistanceSensor.class, "lift_ctrl");
 
 
 
         lift_test1.setDirection(DcMotor.Direction.FORWARD);
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftDrive.setDirection(DcMotorEx.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
-        middleDrive.setDirection(DcMotor.Direction.FORWARD);
+        middleDrive.setDirection(DcMotorEx.Direction.FORWARD);
         griper.setDirection(DcMotor.Direction.REVERSE);
 
         //Set up enocoders for lift
