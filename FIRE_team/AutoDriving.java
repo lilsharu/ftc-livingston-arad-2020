@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -13,9 +15,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 public class AutoDriving {
 
-    private DcMotor leftSide;
+    private DcMotorEx leftSide; //Might need to change to DcMotorEx in hardware class
     private DcMotor rightSide;
-    private DcMotor middleMotor;
+    private DcMotorEx middleMotor;
     private BNO055IMU imu;
     private Robot_Prameters robotPrameters;
     private Field field;
@@ -28,9 +30,23 @@ public class AutoDriving {
     double autoSpeed = 0.5;
 
 
-    public AutoDriving(DcMotor leftSide, DcMotor rightSide, DcMotor middleMotor,
+    public AutoDriving(DcMotorEx leftSide, DcMotor rightSide, DcMotorEx middleMotor,
                        BNO055IMU imu, Robot_Prameters robotPrameters, Field field , Telemetry telemetry,
                        ExampleForUsingLocaionControl EC ) {
+        this.EC = EC ;
+        this.leftSide = leftSide;
+        this.rightSide = rightSide;
+        this.middleMotor = middleMotor;
+        this.imu = imu;
+        this.robotPrameters = robotPrameters;
+        this.field = field;
+        currentRobotLocation = robotPrameters.getCenterOfTheRobot() ;
+        this.telemetry = telemetry;
+
+    }
+
+    public AutoDriving(DcMotorEx leftSide, DcMotor rightSide, DcMotorEx middleMotor,
+                       BNO055IMU imu, Robot_Prameters robotPrameters, Field field , Telemetry telemetry) {
         this.EC = EC ;
         this.leftSide = leftSide;
         this.rightSide = rightSide;
@@ -50,9 +66,9 @@ public class AutoDriving {
      */
     public void RotateRobotToAngle (double angle,double range ,double slow ,double Vmax){
 
-        leftSide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftSide.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rightSide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        middleMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        middleMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         Rotate( angle, range , slow , Vmax);
 
@@ -119,13 +135,13 @@ public class AutoDriving {
 
 
 
-               if(middleMotor.getCurrentPosition() - convertToTicksX(distances[0]) < 0) {
-                   middleMotor.setPower(autoSpeed);
-               }
-               else
-               {
-                   middleMotor.setPower(-autoSpeed);
-               }
+                if(middleMotor.getCurrentPosition() - convertToTicksX(distances[0]) < 0) {
+                    middleMotor.setPower(autoSpeed);
+                }
+                else
+                {
+                    middleMotor.setPower(-autoSpeed);
+                }
             }
             else
             {
@@ -198,7 +214,7 @@ public class AutoDriving {
 //            telemetry.addData("left encoder", convertToDistanceY(leftSide.getCurrentPosition()));
 //            telemetry.addData("middle encoder", convertToDistanceX(middleMotor.getCurrentPosition()));
 //            telemetry.addData("target point:", newPoint.getX_axis() + ", " + newPoint.getY_axis());
- //           telemetry.update();
+            //           telemetry.update();
 
 
         }
@@ -210,10 +226,10 @@ public class AutoDriving {
 //        leftSide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-         leftSide.setPower(0);
-         middleMotor.setPower(0);
-         rightSide.setPower(0);
-         return true;
+        leftSide.setPower(0);
+        middleMotor.setPower(0);
+        rightSide.setPower(0);
+        return true;
     }
 
 
@@ -226,7 +242,7 @@ public class AutoDriving {
         double incline = 30/8; //  15/8
 
 
-       if(Math.abs(GyroAngle() - currntAngle) > 1 && Math.abs(GyroAngle() - currntAngle) < 10)
+        if(Math.abs(GyroAngle() - currntAngle) > 1 && Math.abs(GyroAngle() - currntAngle) < 10)
         {
 //            value_left_motor = value_left_motor*(-1*((incline * (GyroAngle()-currntAngle) + 1.25)/100) + 1);
 //            value_right_motor =value_left_motor;
@@ -265,19 +281,35 @@ public class AutoDriving {
         return res ;
     }
 
+    //Slows the robot down as it nears destination
+    public double proportionDrive(double passedDistance, double slow, double targetDistance) {
+        //double decldist= passedDistance-targetDistance;
+        double vInitial = middleMotor.getVelocity(); //Finds current velocity in t/s
+        if (passedDistance<=(targetDistance/2)){ //Assuming we want to start slowing down when half way there
+            //vf^2=vi^2+2ad
+            //vf^2-vi^2=2ad
+            //vf^2-vi^2/2d=a
+            //a=vf^2-vi^2/2d
 
-    private double proprtionalDrive(double passedDistance, double slow, double targetDistance)
-    {
+            //Calculates acceleration needed to get to zero velocity
+            double accel = (Math.pow(vInitial, 2))/(2*targetDistance);
+            //Decelerates the motor
+            double vFinal = (vInitial-accel); //Might need to change due to timing
+            return vFinal;
+        }
+        /*
         double incline = 0.7 / slow;
         double motorValue = 0;
 
         motorValue = incline * (targetDistance - passedDistance) + 0.3;
 
         return Range.clip(motorValue,-1,1);
+        */
+        return vInitial;//returns same velocity is it isn't at a slowing point
     }
 
 
-    private double convertToDistanceX(double ticks){
+    public double convertToDistanceX(double ticks){
         double     DRIVE_GEAR_REDUCTION    = 40 ;
         double     WHEEL_DIAMETER_MM   = 90 ;
         return ((ticks * WHEEL_DIAMETER_MM * Math.PI) / (DRIVE_GEAR_REDUCTION * 28.5));
