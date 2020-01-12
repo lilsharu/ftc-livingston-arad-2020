@@ -1,5 +1,3 @@
-package org.firstinspires.ftc.teamcode;
-
 /* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,6 +27,9 @@ package org.firstinspires.ftc.teamcode;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -38,381 +39,381 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-
+@Disabled
 @TeleOp(name="Basic: Teleop", group="Linear Opmode")
-
 public class Teleop extends LinearOpMode {
 
-    // Declare OpMode members.
+    /**
+     *     Declare parts from the Hardware class
+     *     and create variable
+      */
 
     Hardware robot = new Hardware();
-
-    private Robot robotObj;
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftSide;
     private DcMotor griper;
     private DcMotor rightSide;
     private DcMotor middleMotor;
     private DcMotor lift_test;
-
+    private DcMotor parkingMotor;
+    private BNO055IMU imu;
     private DistanceSensor lift_ctrl;
     private Servo griper_servo;
-    private final double foundation_height = 66;
-    private final double minimalHight = 52;
-    private final double level_height= 103;
-    private boolean IsPressed = false;
-    private double deadZone = 0.1;
-    Wheel lift = new Wheel(45,2250,"omni","mm");
-
+    private Servo fundationHolder;
+    volatile boolean g2StartButtonIsPressed = false;
+    volatile boolean g1StartButtonIsPressed = false;
+    volatile boolean g1BackButtonIsPressed = false;
+    volatile boolean isClawPressed;
+    volatile boolean isGripperPressed;
+    volatile boolean isFourbarPressed;
+    volatile boolean isLiftPressed;
+    boolean rollerGriperIsOpen = true;
+    boolean fourbarIsOpen = true;
+    boolean graberIsOpen = true;
+    double powerY;
+    double powerX;
+    double gyroAngle;
+    double leftPower;
+    double rightPower;
+    double middlePower;
+    double minimalHight = 20;
+    double foundationHight = minimalHight + 50;
+    double level_height = 100;
+    double sample;
+    double error;
+    int range = 10;
 
 
 
     @Override
     public void runOpMode() {
-        robotObj = new Robot(2240, hardwareMap, this);
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
+/**
+ * init the components
+ */
         robot.init(hardwareMap);
-        lift_test =robot.lift_test1;
-        leftSide = robot.leftDrive ;
+        lift_test = robot.lift_test1;
+        leftSide = robot.leftDrive;
         rightSide = robot.rightDrive;
         middleMotor = robot.middleDrive;
         griper = robot.griper;
         lift_ctrl = robot.lift;
-        griper_servo =robot.griper_servo;
-
-
-
-        //Varibles for joystick position
-        double G1rightStickY = -gamepad1.right_stick_y;
-        double G1leftStickY = -gamepad1.left_stick_y;
-        double G1rightStickX = -gamepad1.right_stick_x;
-        double G1leftStickX = -gamepad1.left_stick_x;
-
-
-
-
-        // Setup a variable for each drive wheel to save power level for telemetry
-        double leftPower =0;
-        double rightPower =0;
-        double middlePower = 0;
-        boolean fourbarIsOpen =true;
-        boolean graberIsOpen= true;
-        boolean rollerGriperIsOpen = true;
-        boolean foundation_griperIsOpen = true;
+        griper_servo = robot.griper_servo;
+        fundationHolder = robot.fundationHolder;
+        imu = robot.imu;
+        parkingMotor = robot.parkingMotor;
+/**
+ * create more variables
+ */
+        boolean manualControl = false;
+        boolean fieldOrientatedDrive = false;
+        boolean foundationHolderIsOpened = false;
         int level = 0;
-        int range = 20;
-
-
-
-        // Wait for the game to start (driver presses PLAY)
-
+        gyroAngle = 0;
+        isClawPressed = false;
+        isFourbarPressed = false;
+        isGripperPressed = false;
+        isLiftPressed = false;
         waitForStart();
         runtime.reset();
+/** create/init  the threads for the teleop
+ *
+ */
+        ActiveLocation activeLocation = new ActiveLocation(leftSide, rightSide, middleMotor,imu , new Location(0,0));
+        Thread currentLocationThread = new Thread(activeLocation);
+        currentLocationThread.start();
 
+//        DistanceToTargetFinder distanceToTargetFinder = new DistanceToTargetFinder(activeLocation, imu);
+//        Thread targetLocationThread = new Thread(distanceToTargetFinder);
+//        targetLocationThread.start();
 
+        Location point = new Location(1000, 1000);
+
+//        distanceToTargetFinder.setNewPoint(point);
+/**
+ * sets the mode for the motors
+ */
+        leftSide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightSide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        middleMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            telemetry.addData("range", String.format("%.01f mm", lift_ctrl.getDistance(DistanceUnit.MM)));
-            double trigger_button = gamepad2.right_trigger;
-//
-            telemetry.addData( "trigger_button",(trigger_button));
-
-//
-//                if( lift_ctrl.getDistance(DistanceUnit.MM)<lift1.High() && gamepad1.a ){
-//
-//
-//                lift_test.setPower(1);
-//            }else lift_test.setPower(0);
-//
-//
-//            telemetry.addData("range", String.format("%.01f mm", lift_ctrl.getDistance(DistanceUnit.MM)));
-
-
-//Would be start of lift method???
-            //Change to is pressed?
-            //if (gamepad2.dpad_down || gamepad2.dpad_up || gamepad2.dpad_left || gamepad2.dpad_right) { //Should stop lift from moving without dpad being pressed
-                if (gamepad2.dpad_up && level < 6 && !IsPressed) { //Lift
-                    level++;
-                    //IsPressed = true;
-                    IsPressed =moveLift(level, range);
-
-                } //else {
-                    //IsPressed = false;
-                //}
-
-                else if (gamepad2.dpad_down && level > 0) { // && !IsPressed) { //!IsPressed part stops someone from spamming it down
-                    level--;
-                    //IsPressed = true;
-                    IsPressed = moveLift(level, range);
-                } //else {
-                    //IsPressed = false;
-                //}
-
-
-                if (gamepad2.b) {
-                    level = 0;
-                }
-
-                //Math to move to lift
-
-                double sample = lift_ctrl.getDistance(DistanceUnit.MM) - (minimalHight + level_height * level);
-                double error = Math.abs(sample);
-
-
-                //Either add condition Ispressed == true or make method
-                if (error > range) { //Shouldn't be runable when dpad hasn't been pressed
-                    //Stops lift from raising on int if sensor is disconnected
-                    if (sample >= 5000) {
-                        telemetry.addLine("Distance sensor doesn't work");
-                    } else if (sample < 0) {
-                        lift_test.setPower(0.8);
-                    } else if (sample > 0) {
-                        lift_test.setPower(-0.8);
-                    }
-
-                } else {
-                    lift_test.setPower(0);
-                }
-
-           // }
-//Would be end of lift method???
-
-            if(gamepad2.back){
-                robot.rightExpantion.setPosition(0);
-                robot.leftExpantion.setPosition(0);
-            }else if (gamepad2.start){
-                robot.leftExpantion.setPosition(0.25);
-                robot.rightExpantion.setPosition(-0.25);
+            /**
+             * switch between  of the drive train (field Orientated Drive and normal)
+             */
+            if (gamepad1.back && fieldOrientatedDrive && !g1BackButtonIsPressed) {
+                fieldOrientatedDrive = false;
+                g1BackButtonIsPressed = true;
+            } else if (gamepad1.back && !fieldOrientatedDrive && !g1BackButtonIsPressed) {
+                fieldOrientatedDrive = true;
+                g1BackButtonIsPressed = true;
+            } else if(!gamepad1.back){
+                g1BackButtonIsPressed = false;
             }
 
+            gyroAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+            /**
+             * the different calculations of the  different modes
+             */
+            if (fieldOrientatedDrive) {
+                powerY = -(gamepad1.left_stick_x * Math.sin(Math.toRadians(-gyroAngle))) + gamepad1.left_stick_y * Math.cos(Math.toRadians(-gyroAngle));
+                powerX = gamepad1.left_stick_x * Math.cos(Math.toRadians(-gyroAngle)) + gamepad1.left_stick_y * Math.sin(Math.toRadians(-gyroAngle));
 
-            rightPower = leftPower  = -gamepad1.left_stick_y ;
-            middlePower = -gamepad1.left_stick_x ;
-            /*
-                if (Math.abs(G1leftStickY) < deadZone && Math.abs(G1leftStickX) < deadZone && Math.abs(G1rightStickX) < deadZone) {
-                    robotObj.turnOff();
-                }
-                else if (Math.abs(G1leftStickY)< deadZone && Math.abs(G1leftStickX)< deadZone && Math.abs(G1rightStickX) >= deadZone) {
-                    if (G1rightStickX > 0) {
-                        robotObj.turn(G1rightStickX, "r");
-                    }
-                    else {
-                        robotObj.turn(-(G1rightStickX), "l");
-                    }
-                }
-                else if (((Math.abs(G1leftStickY) >= deadZone) || Math.abs(G1leftStickX) >= deadZone) && Math.abs(G1rightStickX) < deadZone) {
-                    robotObj.setForwardPower(G1leftStickY);
-                    robotObj.strafe(G1leftStickX);
-                }
-                else {
-                    robotObj.setRightPower(rightPower(G1leftStickY, G1rightStickX));
-                    robotObj.setLeftPower(leftPower(G1leftStickY, G1rightStickX));
-                    robotObj.strafe(G1leftStickX);
-                }
 
-            /*
-            if(gamepad1.left_bumper)
-            {
-                rightPower = 0.4;
-                leftPower = -0.4;
+                rightPower = leftPower = powerY;
+                middlePower = powerX;
+            } else {
+                rightPower = leftPower = gamepad1.left_stick_y;
+                middlePower = gamepad1.left_stick_x;
             }
-            else if(gamepad1.right_bumper)
-            {
-                rightPower = -0.4;
-                leftPower = 0.4;
+/**
+ *  turning to both sids
+ */
+            if (gamepad1.left_trigger > 0) {
+                rightPower = -gamepad1.left_trigger;
+                leftPower = gamepad1.left_trigger;
+                rightPower = Range.clip(rightPower, -0.6, 0.6);
+                leftPower = Range.clip(leftPower, -0.6, 0.6);
+            } else if (gamepad1.right_trigger > 0) {
+                rightPower = gamepad1.right_trigger;
+                leftPower = -gamepad1.right_trigger;
+                rightPower = Range.clip(rightPower, -0.6, 0.6);
+                leftPower = Range.clip(leftPower, -0.6, 0.6);
             }
-
+/**
+ * sets power
+ */
             leftSide.setPower(leftPower);
             rightSide.setPower(rightPower);
             middleMotor.setPower(middlePower);
-            */
-
-
-
-            if(gamepad2.y && graberIsOpen )
-            {
-                robot.catchStone.setPosition(0.35);//close
-                graberIsOpen = false;
-            }
-            else if (gamepad2.y && graberIsOpen == false)
-            {
-                robot.catchStone.setPosition(0.6);//open
-                graberIsOpen = true;
-            }
-
-
-            if(gamepad2.a && fourbarIsOpen)
-            {
-                robot.catchStone.setPosition(0.35);//close
-                robot.fourbar.setPosition(0.65);//open
-                fourbarIsOpen = false;
-            }
-            else if (gamepad2.a && fourbarIsOpen == false)
-            {
-                robot.catchStone.setPosition(0.35);//close
-                robot.fourbar.setPosition(0.2);//close
+/**
+ * the opening and closing fourbar of the claw
+ */
+            if (gamepad2.a && !fourbarIsOpen && !isFourbarPressed) {
+                robot.fourbar.setPosition(0);
                 fourbarIsOpen = true;
-            }
-
-
-            if (gamepad2.x && rollerGriperIsOpen == false)
-            {
-                griper_servo.setPosition(1);
-                rollerGriperIsOpen = true;
-            }
-            else if (gamepad2.x && rollerGriperIsOpen)
-            {
-                griper_servo.setPosition(0);
-                rollerGriperIsOpen = false;
-            }
-
-
-            if (gamepad2.right_bumper)
-            {
-                griper.setPower(0.8);
-            }
-            else if (gamepad2.left_bumper)
-            {
-                griper.setPower(-0.8);
-            }
-            else
-            {
-                griper.setPower(0);
-            }
-
-
-            double cs  = robot.catchStone.getPosition();
-
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-            telemetry.addData( "a" , robot.leftExpantion.getPosition());
-            telemetry.addData( "c" , robot.rightExpantion.getPosition());
-            telemetry.addData( "griper-servo" , robot.griper_servo.getPosition());
-            telemetry.addData("level: ", level);
-            telemetry.addData("lift-ctrl: ", lift_ctrl.getDistance(DistanceUnit.MM));
-            telemetry.update();
+                isFourbarPressed = true;
+            } else if (gamepad2.a && fourbarIsOpen) {
+                robot.fourbar.setPosition(1);
+                fourbarIsOpen = false;
+                isFourbarPressed = true;
+            }    else if (!gamepad2.a) {
+            isFourbarPressed = false;
         }
-    }
-
-    int pos = lift_test.getCurrentPosition();
-    double dist = lift.getDistance(pos);
 
 
-
-
-    int maxPos=300;//Change later
-    public void ControlLift(double power){
-        telemetry.addData("Height", dist);
-        int range = 10;
-        int intpos = lift_test.getCurrentPosition();
-        //Checks if is at max height and num is postive
-        if (intpos >= (maxPos-range) && range>0){ //If lift goes higher will go out of bounds
-            telemetry.addLine("Lift won't go higher");
-        }else if (intpos <= 0 && range<0){//If lift goes lower it will go out of bounds
-            telemetry.addLine("Lift won't go lower");
-        }else {
-            telemetry.addData("init pos:", intpos);
-
-            if (gamepad2.dpad_right){
-                lift_test.setPower(power);
+/**
+ * switch between the different  mods of the lift (levels and manual)
+ */
+            if (gamepad2.start && !g2StartButtonIsPressed && !manualControl) {
+                manualControl = true;
+                g2StartButtonIsPressed = true;
+            } else if (gamepad2.start && !g2StartButtonIsPressed && manualControl) {
+                manualControl = false;
+                g2StartButtonIsPressed = true;
+            } else if(!gamepad2.start){
+                g2StartButtonIsPressed = false;
             }
-            else if (gamepad2.dpad_left){
-                lift_test.setPower(-(power));
-            }else{
+
+/**
+ * move the lift up
+ */
+            if (gamepad2.dpad_up && level < 6 && !isLiftPressed && !manualControl) {
+                level++;
+                isLiftPressed = true;
+                liftAutoControl(manualControl, level);
+            } else if (gamepad2.dpad_up && !isLiftPressed && manualControl) {
+                isLiftPressed = true;
+                lift_test.setPower(1);
+            } else if (!gamepad2.dpad_up) {
+                isLiftPressed = false;
+            }
+/**
+ * move the  lift down
+ */
+
+            if (gamepad2.dpad_down && level > 0 && !isLiftPressed && !manualControl) {
+                level--;
+                isLiftPressed = true;
+                liftAutoControl(manualControl, level);
+            } else if (gamepad2.dpad_down && manualControl) {
+                lift_test.setPower(-1);
+            } else if (!gamepad2.dpad_down) {
+                isLiftPressed = false;
+            }
+/**
+ * stops the lift
+ */
+            if (manualControl && !gamepad2.dpad_down && !gamepad2.dpad_up)
+            {
                 lift_test.setPower(0);
             }
 
-        }
-
-
-
-    }
-
-    public void finalTeleopStrafe(double G1rightStickY, double G1leftStickY, double G1rightStickX, double G1leftStickX){
-        if (Math.abs(G1leftStickY) < deadZone && Math.abs(G1leftStickX) < deadZone && Math.abs(G1rightStickX) < deadZone) {
-            turnOff();
-        }
-        else if (Math.abs(G1leftStickY)< deadZone && Math.abs(G1leftStickX)< deadZone && Math.abs(G1rightStickX) >= deadZone) {
-            if (G1rightStickX > 0) {
-                robotObj.turn(G1rightStickX, "r");
-            }
-            else {
-                robotObj.turn(-(G1rightStickX), "l");
-            }
-        }
-        else if (((Math.abs(G1leftStickY) >= deadZone) || Math.abs(G1leftStickX) >= deadZone) && Math.abs(G1rightStickX) < deadZone) {
-            robotObj.setForwardPower(G1leftStickY);
-            robotObj.strafe(G1leftStickX);
-        }
-        else {
-            robotObj.setRightPower(rightPower(G1leftStickY, G1rightStickX));
-            robotObj.setLeftPower(leftPower(G1leftStickY, G1rightStickX));
-            robotObj.strafe(G1leftStickX);
-        }
-
-    }
-
-    public double rightPower(double leftY, double rightY){
-        return 0.5 * leftY + 0.5 * rightY;
-    }
-
-    public double leftPower(double leftY, double rightY) {
-        return 0.5 * leftY - 0.5 * rightY;
-    }
-
-    public boolean moveLift(int level, int range){
-        double sample = lift_ctrl.getDistance(DistanceUnit.MM) - (minimalHight + level_height * level);
-        double error = Math.abs(sample);
-
-
-        //Either add condition Ispressed == true or make method
-        while (error > range) { //Shouldn't be runable when dpad hasn't been pressed
-            //Stops lift from raising on int if sensor is disconnected
-            if (sample >= 5000) {
-                telemetry.addLine("Distance sensor doesn't work");
-            } else if (sample < 0) {
-                lift_test.setPower(0.8);
-            } else if (sample > 0) {
-                lift_test.setPower(-0.8);
+            if (gamepad2.b && !manualControl) {
+                level = 0;
             }
 
-        }
-        if (error == range){
-            lift_test.setPower(0);
-        }
-        else {
-            lift_test.setPower(0);
-        }
-        return false;
 
+/**
+ * opening and closing the expantion
+ */
+            if (gamepad1.left_bumper) {
+                robot.rightExpantion.setPosition(0);
+                robot.leftExpantion.setPosition(1);
+            } else if (gamepad1.right_bumper) {
+                robot.leftExpantion.setPosition(0);
+                robot.rightExpantion.setPosition(1);
+            }
+/**
+ *opening and closing the roller griper
+ */
+            if (gamepad2.x && rollerGriperIsOpen && !isGripperPressed) {
+                griper_servo.setPosition(1);//close
+                rollerGriperIsOpen = false;
+                isGripperPressed = true;
+            } else if (gamepad2.x && !rollerGriperIsOpen && !isGripperPressed) {
+                griper_servo.setPosition(0.38);
+                rollerGriperIsOpen = true;
+                isGripperPressed = true;
+            } else if (!gamepad2.x) {
+                isGripperPressed = false;
+            }
+/**
+ * spine the intake
+ */
+
+            if (gamepad2.right_bumper) {
+                griper.setPower(0.8);
+            } else if (gamepad2.left_bumper) {
+                griper.setPower(-0.8);
+            } else {
+                griper.setPower(0);
+            }
+/**
+ * open and close the fundationHolder
+ */
+            if (gamepad1.start && !foundationHolderIsOpened && !g1StartButtonIsPressed) {
+                fundationHolder.setPosition(0);
+                foundationHolderIsOpened = true;
+                g1StartButtonIsPressed = true;
+            } else if (gamepad1.start && foundationHolderIsOpened && !g1StartButtonIsPressed) {
+                fundationHolder.setPosition(1);
+                foundationHolderIsOpened = false;
+                g1StartButtonIsPressed = true;
+            } else {
+                g1StartButtonIsPressed = false;
+            }
+/**
+ * open and close the claw
+ */
+            if (gamepad2.y && graberIsOpen && !isClawPressed) {
+                robot.catchStone.setPosition(0.36);//close
+                graberIsOpen = false;
+                isClawPressed = true;
+            } else if (gamepad2.y && graberIsOpen == false && !isClawPressed) {
+                robot.catchStone.setPosition(0.6);//open
+                graberIsOpen = true;
+                isClawPressed = true;
+            } else if (!gamepad2.y) {
+                isClawPressed = false;
+            }
+
+/**
+ * open and close the parkingMotor
+ */
+            if (gamepad1.dpad_up) {
+                parkingMotor.setPower(1);
+            } else if (gamepad1.dpad_down) {
+                parkingMotor.setPower(-1);
+            } else {
+                parkingMotor.setPower(0);
+            }
+
+
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Motors", "left (%.2f), right (%.2f), middle (%.2f)", leftPower, rightPower, middlePower);
+            telemetry.addData("angle", gyroAngle);
+            telemetry.addData("filed-orientated: ", fieldOrientatedDrive);
+            telemetry.addData("currentPoint: ","(x:(%.2f), y:(%.2f))", activeLocation.getX_Axis(), activeLocation.getY_Axis());
+            telemetry.addData("level: ", level);
+//            double[] distances = distanceToTargetFinder.getDistanceTotarget();
+//            telemetry.addData("distances - ","distance in x axis: (%.2f), distance in y axis: (%.2f)", distances[0], distances[1]);
+            telemetry.addData("encoders: ","left((%.2f)), right((%.2f)), middle((%.2f))",
+                    convertToTicksY(leftSide.getCurrentPosition()), convertToTicksY(rightSide.getCurrentPosition()), convertToTicksX(middleMotor.getCurrentPosition()));
+            telemetry.addData("lift-ctrl: ", lift_ctrl.getDistance(DistanceUnit.MM));
+            telemetry.update();
+        }
+        activeLocation.setStop(true);
+//        distanceToTargetFinder.setStop(true);
     }
 
+    /**
+     * move the lift between levels
+     * @param manualControl
+     * @param level
+     */
 
+    public void liftAutoControl(boolean manualControl, int level)
+    {
+        if (!manualControl)
+        {
+            if (level == 0)
+            {
+                sample = lift_ctrl.getDistance(DistanceUnit.MM) - minimalHight;
+            }
+            else
+            {
+                sample = lift_ctrl.getDistance(DistanceUnit.MM) - (foundationHight + level_height * (level - 1));
+            }
 
-    /*public void SetUpEncodersForDistance(int distance){
-        //Reset encoder values
-        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        middleDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //Set target position
-        leftDrive.setTargetPosition(distance);
-        rightDrive.setTargetPosition(distance);
-        middleDrive.setTargetPosition(distance);
-        //Switch to position mode
-        leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        middleDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            error = Math.abs(sample);
 
-    }*/
-    public void turnOff(){
-        leftSide.setPower(0);
-        rightSide.setPower(0);
-        middleMotor.setPower(0);
+            if (error > range)
+            {
+                if (sample < 0)
+                {
+                    lift_test.setPower(1);
+                }
+                else if (sample > 0)
+                {
+                    lift_test.setPower(-1);
+                }
+            }
+            else
+            {
+                lift_test.setPower(0);
+            }
+        }
+    }
+
+    /**
+     * convert distance to ticks (x axis)
+     * @param distance
+     * @return ticks in the robot x axis
+     */
+    public static double convertToTicksX(double distance){
+        double     DRIVE_GEAR_REDUCTION    = 20 ;
+        double     WHEEL_DIAMETER_MM   = 90 ;
+        return ((distance * DRIVE_GEAR_REDUCTION  * 28.5) / (WHEEL_DIAMETER_MM * Math.PI ));
+    }
+
+    /**
+     * convert distance to ticks (y axis)
+     * @param distance
+     * @return ticks in the robot y axis
+     */
+    private double convertToTicksY(double distance){
+
+        double     DRIVE_GEAR_REDUCTION    = 20 ;
+        double     WHEEL_DIAMETER_MM   = 90 ;
+        return -((distance * DRIVE_GEAR_REDUCTION  * 28.5)/ (WHEEL_DIAMETER_MM * Math.PI));
+
     }
 }
