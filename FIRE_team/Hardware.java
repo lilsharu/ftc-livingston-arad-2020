@@ -25,27 +25,27 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 public class Hardware{
 
-    BNO055IMU imu ;
+    BNO055IMU imu;
 
-
-    public DcMotor  middleDrive     = null;
+    public DcMotor  middleDrive = null;
     public DcMotor lift_test1 = null;
     public DcMotor leftDrive = null;
     public DcMotor griper = null;
     public DcMotor rightDrive = null;
-
-    public Servo    leftExpantion    = null;
-    public Servo    fourbar = null;
-    public Servo    catchStone = null;
-    public Servo    rightExpantion   = null;
-    public Servo    griper_servo = null;
-    public DistanceSensor lift ;
+    public DcMotor parkingMotor = null;
+    public Servo fundationHolder = null;
+    public Servo leftExpantion = null;
+    public Servo fourbar = null;
+    public Servo catchStone = null;
+    public Servo rightExpantion = null;
+    public Servo griper_servo = null;
+    public DistanceSensor lift = null;
 
     public static final double startPosition = 0;
     public static final double finalPosition = 0.25;
 
-    HardwareMap hwMap           =  null;
-    private ElapsedTime period  = new ElapsedTime();
+    HardwareMap hwMap =  null;
+    private ElapsedTime period = new ElapsedTime();
 
 
     public void init(HardwareMap ahwMap) {
@@ -73,27 +73,25 @@ public class Hardware{
         rightDrive = hwMap.get(DcMotor.class, "right_drive");
         middleDrive = hwMap.get(DcMotor.class, "middle_drive");
         griper = hwMap.get(DcMotor.class ,"gripper");
-
+        parkingMotor = hwMap.get(DcMotor.class ,"parking_motor");
         rightExpantion = hwMap.get(Servo.class, "right_expansion");
         leftExpantion = hwMap.get(Servo.class, "left_expansion");
         fourbar = hwMap.get(Servo.class ,"fourbar");
         catchStone = hwMap.get(Servo.class, "catch_Servo");
         griper_servo = hwMap.get(Servo.class ,"gripper_servo");
-
         lift = hwMap.get(DistanceSensor.class, "lift_ctrl");
-
+        fundationHolder = hwMap.get(Servo.class, "foundation_holder");
 
 
         lift_test1.setDirection(DcMotor.Direction.FORWARD);
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
-        middleDrive.setDirection(DcMotor.Direction.FORWARD);
+        middleDrive.setDirection(DcMotor.Direction.REVERSE);
         griper.setDirection(DcMotor.Direction.REVERSE);
 
-        //Set up enocoders for lift
-        lift_test1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lift_test1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+//        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        middleDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Set all motors to zero power
         leftDrive.setPower(0);
@@ -102,8 +100,4 @@ public class Hardware{
         lift_test1.setPower(0);
         middleDrive.setPower(0);
     }
-
-
-
-
 }

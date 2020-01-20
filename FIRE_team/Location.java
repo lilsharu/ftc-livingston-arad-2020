@@ -4,9 +4,7 @@ import java.lang.Math;
 import java.lang.reflect.Array;
 import java.util.Map;
 
-/**
- * Created by lior on 10/8/2019.
- */
+
 
 public class Location {
 
@@ -37,19 +35,49 @@ public class Location {
         double deltaY = NewPoint.getY_axis() - CurrentPoint.getY_axis();
 
 
-        distanceFor_X_Axis = (deltaX * Math.cos(Math.toRadians(-GyroAngle)) + deltaY * Math.sin(Math.toRadians(-GyroAngle)));
         distanceFor_Y_Axis = (-(deltaX * Math.sin(Math.toRadians(-GyroAngle))) + deltaY * Math.cos(Math.toRadians(-GyroAngle)));
-
+        distanceFor_X_Axis = deltaX * Math.cos(Math.toRadians(-GyroAngle)) + deltaY * Math.sin(Math.toRadians(-GyroAngle));
 
 
         double[] res = {distanceFor_X_Axis , distanceFor_Y_Axis } ;
         return res ;
     }
 
+    /**
+     * calculate the current location from the passed  distance and the angle
+     * @param passedDistanceX
+     * @param passedDistanceY
+     * @param gyroAngle
+     * @return the current point of the robot
+     */
+
+    public Location oppositeCalculation(double passedDistanceX, double passedDistanceY, double gyroAngle)
+    {
+
+        double cordinateX = passedDistanceX * Math.cos(Math.toRadians(gyroAngle)) - passedDistanceY * Math.sin(Math.toRadians(gyroAngle));
+        double cordinateY = passedDistanceX * Math.sin(Math.toRadians(gyroAngle)) + passedDistanceY * Math.cos(Math.toRadians(gyroAngle));
+
+        Location CurrentPoint = new Location(cordinateX, cordinateY);
+
+        return CurrentPoint;
+    }
+
+
+    /**
+     * gets x axis
+     * @return x axis
+     */
+
+
 
     public double getX_axis() {
         return X_axis;
     }
+
+    /**
+     * gets y axis
+     * @return y axis
+     */
 
     public double getY_axis() {
         return Y_axis;

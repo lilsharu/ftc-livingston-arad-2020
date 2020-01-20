@@ -12,7 +12,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 public class AutoDriving {
-
+    /**
+     *      Declare parts from the Hardware class
+     *      and auto speed
+     */
     private DcMotor leftSide;
     private DcMotor rightSide;
     private DcMotor middleMotor;
@@ -20,18 +23,30 @@ public class AutoDriving {
     private Robot_Prameters robotPrameters;
     private Field field;
     private Telemetry telemetry;
-
     private Location currentRobotLocation ;
     private ElapsedTime runtime = new ElapsedTime();
     private ExampleForUsingLocaionControl EC ;
 
+
     double autoSpeed = 0.5;
 
+    /**
+     * init the parts
+     * @param leftSide
+     * @param rightSide
+     * @param middleMotor
+     * @param imu
+     * @param robotPrameters
+     * @param field
+     * @param telemetry
+     */
 
     public AutoDriving(DcMotor leftSide, DcMotor rightSide, DcMotor middleMotor,
-                       BNO055IMU imu, Robot_Prameters robotPrameters, Field field , Telemetry telemetry,
-                       ExampleForUsingLocaionControl EC ) {
-        this.EC = EC ;
+                       BNO055IMU imu, Robot_Prameters robotPrameters, Field field , Telemetry telemetry)
+    {
+
+        //,ExampleForUsingLocaionControl EC
+        //this.EC = EC ;
         this.leftSide = leftSide;
         this.rightSide = rightSide;
         this.middleMotor = middleMotor;
@@ -59,6 +74,14 @@ public class AutoDriving {
         leftSide.setPower(0);
         rightSide.setPower(0);
     }
+
+    /**
+     * rotate the robot
+     * @param angle
+     * @param range
+     * @param slow
+     * @param Vmax
+     */
     private void Rotate(double angle,double range ,double slow ,double Vmax){
         while ( ! (Math.abs(angle-GyroAngle()) <= range) ){
             Double turn =   ((angle-GyroAngle())/slow)*Vmax;
@@ -74,7 +97,10 @@ public class AutoDriving {
         rightSide.setPower(0);
     }
 
-
+    /**
+     * gets the gyro angel
+     * @return gyro angel
+     */
     private double GyroAngle(){
         return  -imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle ;
     }
@@ -96,7 +122,9 @@ public class AutoDriving {
 //        runtime.reset();
 //        while (runtime.milliseconds() < 2000);
 
-
+/**
+ * set the mod of the motors
+ */
         rightSide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         middleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -107,24 +135,18 @@ public class AutoDriving {
 
         boolean a = true;
         boolean b = true;
+        int counter = 0;
         double[] yMotorValues = null;
 
         while (a || b) {
             if(Math.abs(middleMotor.getCurrentPosition() - convertToTicksX(distances[0])) > range)
             {
-
-//
-//               middleMotor.setPower(proprtionalDrive(convertToDistanceX(middleMotor.getCurrentPosition())
-//                       ,500, distances[0]));
-
-
-
                if(middleMotor.getCurrentPosition() - convertToTicksX(distances[0]) < 0) {
-                   middleMotor.setPower(autoSpeed);
+                   middleMotor.setPower(-autoSpeed);
                }
                else
                {
-                   middleMotor.setPower(-autoSpeed);
+                   middleMotor.setPower(autoSpeed);
                }
             }
             else
@@ -147,29 +169,21 @@ public class AutoDriving {
                 telemetry.addData("middle encoder: ", convertToDistanceY(middleMotor.getCurrentPosition()));
                 telemetry.addData("angle: ", "current angle: " + GyroAngle());
                 telemetry.addData("Motors", "Target angle: " + angle);
-//                telemetry.addData("left voltage: ", yMotorValues[0]);
-//                telemetry.addData("right voltage: ", yMotorValues[1]);
                 telemetry.update();
-
-//                double passedDistance = leftSide.getCurrentPosition();
-//                rightSide.setPower(-proprtionalDrive(convertToDistanceY(passedDistance)
-//                        ,500, distances[1]));
-//                leftSide.setPower(-proprtionalDrive(convertToDistanceY(passedDistance)
-//                        ,500, distances[1]));
 
                 yMotorValues = drivingFixWithGyro(-autoSpeed, angle);
 
                 if(leftSide.getCurrentPosition() - convertToTicksY(distances[1]) < 0) {
 
 
-                    leftSide.setPower(autoSpeed);
-                    rightSide.setPower(autoSpeed);
+                    leftSide.setPower(-autoSpeed);
+                    rightSide.setPower(-autoSpeed);
                 }
                 else
                 {
 
-                    leftSide.setPower(-autoSpeed);
-                    rightSide.setPower(-autoSpeed);
+                    leftSide.setPower(autoSpeed);
+                    rightSide.setPower(autoSpeed);
                 }
             }
             else
@@ -180,34 +194,20 @@ public class AutoDriving {
                 b = false;
             }
 
-//            runtime.reset();
-//            while (runtime.milliseconds() < 10000 && !(a || b)){
-//                leftSide.setPower(0);
-//                middleMotor.setPower(0);
-//                rightSide.setPower(0);
-//                telemetry.addData("done", "");
-//                telemetry.addData("convertToTicksY - x", convertToTicksX(distances[0]));
-//                telemetry.addData("convertToTicksY - y", convertToTicksY(distances[1]));
-//                telemetry.addData("leftSide",leftSide.getCurrentPosition());
-//                telemetry.addData("middleMotor",middleMotor.getCurrentPosition());
-//                telemetry.update();
+            if(counter == 50)
+            {
+                currentRobotLocation = currentRobotLocation.oppositeCalculation(convertToDistanceX(middleMotor.getCurrentPosition()),
+                        convertToTicksY(leftSide.getCurrentPosition()), GyroAngle());
+                counter = 0;
+                telemetry.addData("current cordinates: (%.2f) (%.2f)", currentRobotLocation.getX_axis() + "," + currentRobotLocation.getY_axis());
+                telemetry.update();
 
-//            telemetry.addData("convertToTicksY - x", convertToTicksX(distances[0]));
-//            telemetry.addData("convertToTicksY - y", convertToTicksY(distances[1]));
-//        //    telemetry.addData("right encoder", rightSide.getCurrentPosition());
-//            telemetry.addData("left encoder", convertToDistanceY(leftSide.getCurrentPosition()));
-//            telemetry.addData("middle encoder", convertToDistanceX(middleMotor.getCurrentPosition()));
-//            telemetry.addData("target point:", newPoint.getX_axis() + ", " + newPoint.getY_axis());
- //           telemetry.update();
-
-
+            }
+            else
+            {
+                counter++;
+            }
         }
-        currentRobotLocation = new Location(newPoint.getX_axis() , newPoint.getY_axis());
-
-
-//        rightSide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        middleMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        leftSide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
          leftSide.setPower(0);
@@ -277,32 +277,31 @@ public class AutoDriving {
     }
 
 
-    private double convertToDistanceX(double ticks){
-        double     DRIVE_GEAR_REDUCTION    = 40 ;
+    public static double convertToDistanceX(double ticks){
+        double     DRIVE_GEAR_REDUCTION    = 20 ;
         double     WHEEL_DIAMETER_MM   = 90 ;
-        return ((ticks * WHEEL_DIAMETER_MM * Math.PI) / (DRIVE_GEAR_REDUCTION * 28.5));
+        return (ticks * WHEEL_DIAMETER_MM * Math.PI) / (DRIVE_GEAR_REDUCTION * 28.5);
     }
 
 
-    private double convertToDistanceY(double ticks) {
-        double DRIVE_GEAR_REDUCTION = 40;
+    public static double convertToDistanceY(double ticks) {
+        double DRIVE_GEAR_REDUCTION = 20;
         double WHEEL_DIAMETER_MM = 90;
         return -((ticks * WHEEL_DIAMETER_MM * Math.PI) / (DRIVE_GEAR_REDUCTION * 28.5));
     }
 
 
-    private double convertToTicksX(double distance){
-        double     DRIVE_GEAR_REDUCTION    = 40 ;
+    public static double convertToTicksX(double distance){
+        double     DRIVE_GEAR_REDUCTION    = 20 ;
         double     WHEEL_DIAMETER_MM   = 90 ;
-        return ((distance * DRIVE_GEAR_REDUCTION  * 28.5) / (WHEEL_DIAMETER_MM * Math.PI ));
+        return (distance * DRIVE_GEAR_REDUCTION  * 28.5) / (WHEEL_DIAMETER_MM * Math.PI );
     }
 
 
     private double convertToTicksY(double distance){
-
-        double     DRIVE_GEAR_REDUCTION    = 40 ;
+        double     DRIVE_GEAR_REDUCTION    = 20 ;
         double     WHEEL_DIAMETER_MM   = 90 ;
-        return -((distance * DRIVE_GEAR_REDUCTION  * 28.5)/ (WHEEL_DIAMETER_MM * Math.PI));
+        return  -((distance * DRIVE_GEAR_REDUCTION  * 28.5)/ (WHEEL_DIAMETER_MM * Math.PI));
 
     }
 
