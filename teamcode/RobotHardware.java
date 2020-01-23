@@ -32,8 +32,8 @@ public class RobotHardware {
     HardwareMap hardwareMap;
 
 
-    public void init(HardwareMap aHardwareMap) {
-        hardwareMap = aHardwareMap;
+    public void init(HardwareMap HardwareMap) {
+        hardwareMap = HardwareMap;
 
         //Initializing Motors
         leftFrontMotor = hardwareMap.get(DcMotor.class, "leftFrontMotor");
