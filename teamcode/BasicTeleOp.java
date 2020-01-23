@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode;
+
 /*
  * The Driver-Controlled code for FireStorm Robotics Team
- * Created by Team Member Aryan Bansal
+ * Created by Team Member Aryan Bansal and Ally Mintz
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -10,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import static org.firstinspires.ftc.teamcode.RobotHardware.*;
+import org.firstinspires.ftc.teamcode.*;
 
 @TeleOp(name="Basic TeleOp", group="TeleOp")
 
@@ -29,7 +30,7 @@ public class BasicTeleOp extends OpMode {
 
     //runs only once when the driver hits play
     public void start() {
-        runtime.reset();
+        //runtime.reset();
         telemetry.addData("Status", "Driver Controlled Started");
     }
 
@@ -81,8 +82,9 @@ public class BasicTeleOp extends OpMode {
 
         double power = Math.sqrt(Math.pow(G1leftStickX, 2) + Math.pow(G1leftStickY, 2));
         double deadZone = 0.1;
-        double rightPower;
-        double leftPower;
+        double rightPower =0;
+        double leftPower = 0;
+        Robot.middle_drive.setPower(0);
 
         //If the Joystick is approximately aligned to the positive Y axis (therefore forward motion is applied)
         if (Math.abs(G1leftStickX) <= deadZone && G1leftStickY > deadZone) {
@@ -124,16 +126,15 @@ public class BasicTeleOp extends OpMode {
             rightPower = -0.5 * power;
             leftPower = -power;
         }
+      
         else {
             rightPower = 0;
             leftPower = 0;
+            Robot.middle_drive.setPower(0);
         }
 
-        Robot.frontRightMotor.setPower(rightPower);//replace left stick y with right stick y if you want more control
-        Robot.frontLeftMotor.setPower(leftPower);//replace left stick y with right stick y if you want more control
-        Robot.backRightMotor.setPower(rightPower);//replace left stick y with right stick y if you want more control
-        Robot.backLeftMotor.setPower(leftPower);//replace left stick y with right stick y if you want more control
-
+        Robot.rightFrontMotor.setPower(rightPower);//replace left stick y with right stick y if you want more control
+        Robot.leftFrontMotor.setPower(leftPower);//replace left stick y with right stick y if you want more control
 
 
         //Add more stuff as more things are made. This is for a basic drivetrain. We can change the values to accomodate the drivetrain we are working with.

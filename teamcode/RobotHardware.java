@@ -1,6 +1,6 @@
 /*
  * The Robot Hardware code for the Livingston-Arad
- * Created by Team Member Aryan Bansal
+ * Created by Team Member Shourya Bansal and edited by Aryan Bansal
  */
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -73,7 +73,6 @@ public class RobotHardware {
 /*
         //Define Gyro Sensor
         gyroSensor = hardwareMap.get(GyroSensor.class, "Gyro Sensor");
-
         //Define Distance Sensor
         distanceSensor = hardwareMap.get(DistanceSensor.class, "Distance Sensor");
         */
