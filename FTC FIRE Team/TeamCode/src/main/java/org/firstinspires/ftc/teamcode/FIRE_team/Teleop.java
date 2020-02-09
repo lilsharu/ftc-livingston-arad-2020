@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode.FIRE_team;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -44,9 +43,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Disabled
 @TeleOp(name="Basic: Teleop", group="Linear Opmode")
 public class Teleop extends LinearOpMode {
+
 
     /**
      *     Declare parts from the Hardware class
@@ -56,14 +55,14 @@ public class Teleop extends LinearOpMode {
     Hardware robot = new Hardware();
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftSide;
-    private DcMotor griper;
+    private DcMotor gripperMotor;
     private DcMotor rightSide;
     private DcMotor middleMotor;
-    private DcMotor lift_test;
+    private DcMotor liftMotor;
     private DcMotor parkingMotor;
     private BNO055IMU imu;
-    private DistanceSensor lift_ctrl;
-    private Servo griper_servo;
+    private DistanceSensor liftSensor;
+    private Servo gripperServo;
     private Servo fundationHolder;
     volatile boolean g2StartButtonIsPressed = false;
     volatile boolean g1StartButtonIsPressed = false;
@@ -75,6 +74,7 @@ public class Teleop extends LinearOpMode {
     boolean rollerGriperIsOpen = true;
     boolean fourbarIsOpen = true;
     boolean graberIsOpen = true;
+    public static double angle;
     double powerY;
     double powerX;
     double gyroAngle;
@@ -98,14 +98,14 @@ public class Teleop extends LinearOpMode {
  * init the components
  */
         robot.init(hardwareMap);
-        lift_test = robot.lift_test1;
+        liftMotor = robot.liftMotor;
         leftSide = robot.leftDrive;
         rightSide = robot.rightDrive;
         middleMotor = robot.middleDrive;
-        griper = robot.griper;
-        lift_ctrl = robot.lift;
-        griper_servo = robot.griper_servo;
-        fundationHolder = robot.foundationHolder;
+        gripperMotor = robot.gripperMotor;
+        liftSensor = robot.liftSensor;
+        gripperServo = robot.gripperServo;
+        fundationHolder = robot.fundationHolder;
         imu = robot.imu;
         parkingMotor = robot.parkingMotor;
 /**
@@ -125,17 +125,9 @@ public class Teleop extends LinearOpMode {
 /** create/init  the threads for the teleop
  *
  */
-        ActiveLocation activeLocation = new ActiveLocation(leftSide, rightSide, middleMotor,imu , new Location(0,0));
-        Thread currentLocationThread = new Thread(activeLocation);
-        currentLocationThread.start();
 
-//        DistanceToTargetFinder distanceToTargetFinder = new DistanceToTargetFinder(activeLocation, imu);
-//        Thread targetLocationThread = new Thread(distanceToTargetFinder);
-//        targetLocationThread.start();
 
-        Location point = new Location(1000, 1000);
 
-//        distanceToTargetFinder.setNewPoint(point);
 /**
  * sets the mode for the motors
  */
@@ -146,7 +138,7 @@ public class Teleop extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             /**
-             * switch between  of the drive train (field Orientated Drive and normal)
+             * switch between of the drive train (field Orientated Drive and normal)
              */
             if (gamepad1.back && fieldOrientatedDrive && !g1BackButtonIsPressed) {
                 fieldOrientatedDrive = false;
@@ -158,13 +150,13 @@ public class Teleop extends LinearOpMode {
                 g1BackButtonIsPressed = false;
             }
 
-            gyroAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+            gyroAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle + angle;
             /**
              * the different calculations of the  different modes
              */
             if (fieldOrientatedDrive) {
-                powerY = -(gamepad1.left_stick_x * Math.sin(Math.toRadians(-gyroAngle))) + gamepad1.left_stick_y * Math.cos(Math.toRadians(-gyroAngle));
-                powerX = gamepad1.left_stick_x * Math.cos(Math.toRadians(-gyroAngle)) + gamepad1.left_stick_y * Math.sin(Math.toRadians(-gyroAngle));
+                powerY = -(gamepad1.left_stick_x * Math.sin(Math.toRadians(-gyroAngle))) + gamepad1.left_stick_y * (Math.cos(Math.toRadians(-gyroAngle)));
+                powerX = gamepad1.left_stick_x * Math.cos(Math.toRadians(-gyroAngle)) + gamepad1.left_stick_y * (Math.sin(Math.toRadians(-gyroAngle)));
 
 
                 rightPower = leftPower = powerY;
@@ -197,11 +189,11 @@ public class Teleop extends LinearOpMode {
  * the opening and closing fourbar of the claw
  */
             if (gamepad2.a && !fourbarIsOpen && !isFourbarPressed) {
-                robot.fourbar.setPosition(0);
+                robot.fourbarServo.setPosition(0);
                 fourbarIsOpen = true;
                 isFourbarPressed = true;
             } else if (gamepad2.a && fourbarIsOpen) {
-                robot.fourbar.setPosition(1);
+                robot.fourbarServo.setPosition(1);
                 fourbarIsOpen = false;
                 isFourbarPressed = true;
             }    else if (!gamepad2.a) {
@@ -231,7 +223,7 @@ public class Teleop extends LinearOpMode {
                 liftAutoControl(manualControl, level);
             } else if (gamepad2.dpad_up && !isLiftPressed && manualControl) {
                 isLiftPressed = true;
-                lift_test.setPower(1);
+                liftMotor.setPower(1);
             } else if (!gamepad2.dpad_up) {
                 isLiftPressed = false;
             }
@@ -244,7 +236,7 @@ public class Teleop extends LinearOpMode {
                 isLiftPressed = true;
                 liftAutoControl(manualControl, level);
             } else if (gamepad2.dpad_down && manualControl) {
-                lift_test.setPower(-1);
+                liftMotor.setPower(-1);
             } else if (!gamepad2.dpad_down) {
                 isLiftPressed = false;
             }
@@ -253,7 +245,7 @@ public class Teleop extends LinearOpMode {
  */
             if (manualControl && !gamepad2.dpad_down && !gamepad2.dpad_up)
             {
-                lift_test.setPower(0);
+                liftMotor.setPower(0);
             }
 
             if (gamepad2.b && !manualControl) {
@@ -275,11 +267,11 @@ public class Teleop extends LinearOpMode {
  *opening and closing the roller griper
  */
             if (gamepad2.x && rollerGriperIsOpen && !isGripperPressed) {
-                griper_servo.setPosition(1);//close
+                gripperServo.setPosition(1);//close
                 rollerGriperIsOpen = false;
                 isGripperPressed = true;
             } else if (gamepad2.x && !rollerGriperIsOpen && !isGripperPressed) {
-                griper_servo.setPosition(0.38);
+                gripperServo.setPosition(0.38);
                 rollerGriperIsOpen = true;
                 isGripperPressed = true;
             } else if (!gamepad2.x) {
@@ -290,11 +282,11 @@ public class Teleop extends LinearOpMode {
  */
 
             if (gamepad2.right_bumper) {
-                griper.setPower(0.8);
+                gripperMotor.setPower(0.8);
             } else if (gamepad2.left_bumper) {
-                griper.setPower(-0.8);
+                gripperMotor.setPower(-0.8);
             } else {
-                griper.setPower(0);
+                gripperMotor.setPower(0);
             }
 /**
  * open and close the foundationHolder
@@ -314,11 +306,11 @@ public class Teleop extends LinearOpMode {
  * open and close the claw
  */
             if (gamepad2.y && graberIsOpen && !isClawPressed) {
-                robot.catchStone.setPosition(0.36);//close
+                robot.clawServo.setPosition(0.36);//close
                 graberIsOpen = false;
                 isClawPressed = true;
             } else if (gamepad2.y && graberIsOpen == false && !isClawPressed) {
-                robot.catchStone.setPosition(0.6);//open
+                robot.clawServo.setPosition(0.6);//open
                 graberIsOpen = true;
                 isClawPressed = true;
             } else if (!gamepad2.y) {
@@ -341,17 +333,14 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("Motors", "left (%.2f), right (%.2f), middle (%.2f)", leftPower, rightPower, middlePower);
             telemetry.addData("angle", gyroAngle);
             telemetry.addData("filed-orientated: ", fieldOrientatedDrive);
-            telemetry.addData("currentPoint: ","(x:(%.2f), y:(%.2f))", activeLocation.getX_Axis(), activeLocation.getY_Axis());
             telemetry.addData("level: ", level);
 //            double[] distances = distanceToTargetFinder.getDistanceTotarget();
 //            telemetry.addData("distances - ","distance in x axis: (%.2f), distance in y axis: (%.2f)", distances[0], distances[1]);
             telemetry.addData("encoders: ","left((%.2f)), right((%.2f)), middle((%.2f))",
                     convertToTicksY(leftSide.getCurrentPosition()), convertToTicksY(rightSide.getCurrentPosition()), convertToTicksX(middleMotor.getCurrentPosition()));
-            telemetry.addData("lift-ctrl: ", lift_ctrl.getDistance(DistanceUnit.MM));
+            telemetry.addData("lift-ctrl: ", liftSensor.getDistance(DistanceUnit.MM));
             telemetry.update();
         }
-        activeLocation.setStop(true);
-//        distanceToTargetFinder.setStop(true);
     }
 
     /**
@@ -366,11 +355,11 @@ public class Teleop extends LinearOpMode {
         {
             if (level == 0)
             {
-                sample = lift_ctrl.getDistance(DistanceUnit.MM) - minimalHight;
+                sample = liftSensor.getDistance(DistanceUnit.MM) - minimalHight;
             }
             else
             {
-                sample = lift_ctrl.getDistance(DistanceUnit.MM) - (foundationHight + level_height * (level - 1));
+                sample = liftSensor.getDistance(DistanceUnit.MM) - (foundationHight + level_height * (level - 1));
             }
 
             error = Math.abs(sample);
@@ -379,16 +368,16 @@ public class Teleop extends LinearOpMode {
             {
                 if (sample < 0)
                 {
-                    lift_test.setPower(1);
+                    liftMotor.setPower(1);
                 }
                 else if (sample > 0)
                 {
-                    lift_test.setPower(-1);
+                    liftMotor.setPower(-1);
                 }
             }
             else
             {
-                lift_test.setPower(0);
+                liftMotor.setPower(0);
             }
         }
     }
@@ -410,7 +399,6 @@ public class Teleop extends LinearOpMode {
      * @return ticks in the robot y axis
      */
     private double convertToTicksY(double distance){
-
         double     DRIVE_GEAR_REDUCTION    = 20 ;
         double     WHEEL_DIAMETER_MM   = 90 ;
         return -((distance * DRIVE_GEAR_REDUCTION  * 28.5)/ (WHEEL_DIAMETER_MM * Math.PI));

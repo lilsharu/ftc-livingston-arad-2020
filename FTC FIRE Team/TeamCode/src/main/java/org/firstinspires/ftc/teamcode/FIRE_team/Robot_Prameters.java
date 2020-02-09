@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.FIRE_team;
 
-import java.util.LinkedList;
-
 /**
  * Created by lior on 10/8/2019.
  */

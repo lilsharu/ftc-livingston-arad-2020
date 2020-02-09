@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.FIRE_team;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -25,7 +24,7 @@ public class AutoDriving {
     private Telemetry telemetry;
     private Location currentRobotLocation ;
     private ElapsedTime runtime = new ElapsedTime();
-    private ExampleForUsingLocaionControl EC ;
+    private LocationControlTest EC ;
 
 
     double autoSpeed = 0.5;

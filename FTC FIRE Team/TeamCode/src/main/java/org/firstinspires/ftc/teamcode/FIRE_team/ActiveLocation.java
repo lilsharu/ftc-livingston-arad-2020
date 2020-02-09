@@ -1,4 +1,7 @@
 package org.firstinspires.ftc.teamcode.FIRE_team;
+/**
+ * we import process , imu , DcMotor ,angle unit ,axes order  and axes reference
+ */
 
 import android.os.Process;
 
@@ -10,6 +13,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 public class ActiveLocation implements Runnable {
+    /** Declare  the parts and verbals   */
+
     private volatile double X_Axis;
     private volatile double Y_Axis;
     private volatile boolean stop;
@@ -28,7 +33,16 @@ public class ActiveLocation implements Runnable {
     private volatile double previous_Y1;
     private volatile double previous_Y2;
     private volatile double previous_X;
+    private double fieldSide = 3660;
 
+    /**
+     * the contractor
+     * @param motorLeft
+     * @param motorRight
+     * @param middleMotor
+     * @param imu
+     * @param currentLocation
+     */
     public ActiveLocation(DcMotor motorLeft, DcMotor motorRight,  DcMotor middleMotor, BNO055IMU imu , Location currentLocation ) {
         this.motorLeft = motorLeft;
         this.motorRight = motorRight;
@@ -39,12 +53,14 @@ public class ActiveLocation implements Runnable {
         stop = false;
         Y_Axis = currentLocation.getY_axis();
         X_Axis = currentLocation.getX_axis();
-
     }
 
     @Override
     public void run() {
-        Process.setThreadPriority((Process.THREAD_PRIORITY_BACKGROUND));
+        /** and
+         * set up the verbals ThreadPriority
+         */
+        android.os.Process.setThreadPriority((Process.THREAD_PRIORITY_BACKGROUND));
         current_X = 0;
         current_Y1 = 0;
         current_Y2 = 0;
@@ -61,6 +77,9 @@ public class ActiveLocation implements Runnable {
         }
     }
 
+    /**
+     * the opposite Calculation to improve accuracy of the driving
+     */
     public void oppositeCalculation()
     {
 
@@ -86,19 +105,46 @@ public class ActiveLocation implements Runnable {
 
     }
 
+    /**
+     * gets the x axis
+     * @returnthe x axis
+     */
     public double getX_Axis() {
         return X_Axis;
     }
 
+    /**
+     * gets the y axis
+     * @returnthe y axis
+     */
     public double getY_Axis() {
         return Y_Axis;
     }
 
+    /**
+     * checks if the thead stopped
+     * @return stop
+     */
     public boolean isStop() {
         return stop;
     }
 
+    /**
+     * stops the thread
+     * @param stop
+     */
     public void setStop(boolean stop) {
         this.stop = stop;
+    }
+
+    /**
+     * updates the location after moving the foundation
+     * @param frontDistance
+     * @param sideDistance
+     */
+    public void updateCurrentLocationWithSensors(double frontDistance, double sideDistance)
+    {
+        Y_Axis = sideDistance;
+        X_Axis = frontDistance;
     }
 }
