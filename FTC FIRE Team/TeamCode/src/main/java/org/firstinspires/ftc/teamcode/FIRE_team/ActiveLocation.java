@@ -8,8 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.AutoDriving;
-import org.firstinspires.ftc.teamcode.Location;
 
 public class ActiveLocation implements Runnable {
     private volatile double X_Axis;

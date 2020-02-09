@@ -105,7 +105,7 @@ public class Teleop extends LinearOpMode {
         griper = robot.griper;
         lift_ctrl = robot.lift;
         griper_servo = robot.griper_servo;
-        fundationHolder = robot.fundationHolder;
+        fundationHolder = robot.foundationHolder;
         imu = robot.imu;
         parkingMotor = robot.parkingMotor;
 /**
@@ -297,7 +297,7 @@ public class Teleop extends LinearOpMode {
                 griper.setPower(0);
             }
 /**
- * open and close the fundationHolder
+ * open and close the foundationHolder
  */
             if (gamepad1.start && !foundationHolderIsOpened && !g1StartButtonIsPressed) {
                 fundationHolder.setPosition(0);

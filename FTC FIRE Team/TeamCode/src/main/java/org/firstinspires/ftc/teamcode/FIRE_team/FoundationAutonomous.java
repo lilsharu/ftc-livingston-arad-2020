@@ -43,13 +43,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.FIRE_team.AutoDrivingSecondTry;
+import org.firstinspires.ftc.teamcode.FIRE_team.Hardware;
+import org.firstinspires.ftc.teamcode.FIRE_team.Location;
+import org.firstinspires.ftc.teamcode.FIRE_team.Teleop;
 
 /**
  * we set up the name of the Autonomous
  */
 @Autonomous(name="Foundation Autonomous", group="Pushbot")
 
-public class fundationAutonomous extends LinearOpMode  {
+public class FoundationAutonomous extends LinearOpMode  {
 
     /** Declare on the parts  */
     Hardware robot = new Hardware();
@@ -65,7 +69,7 @@ public class fundationAutonomous extends LinearOpMode  {
     @Override
 
     public void runOpMode() {
-/**
+/*
  * we init parts from Hardware
  */
         robot.init(hardwareMap);
@@ -73,9 +77,9 @@ public class fundationAutonomous extends LinearOpMode  {
 //        Robot_Prameters rp = new Robot_Prameters( 2500 , new Location(830,220)); // I assumed we use dimensions in millimeters
 //        Field field  = new Field(400000 , 40000);
         imu = robot.imu;
-        fundationHolder = robot.fundationHolder;
-        sideDistanceSensor = robot.sideDistanceSensor;
-        frontDistanceSensor = robot.frontDistanceSensor;
+        fundationHolder = robot.foundationHolder;
+//        sideDistanceSensor = robot.sideDistanceSensor;
+//        frontDistanceSensor = robot.frontDistanceSensor;
         leftExpantion = robot.leftExpantion;
         leftSide = robot.leftDrive;
         rightSide = robot.rightDrive;
@@ -120,7 +124,7 @@ public class fundationAutonomous extends LinearOpMode  {
 //
 //
 //            leftExpantion.setPosition(1);
-//            fundationHolder.setPosition(0);
+//            foundationHolder.setPosition(0);
 //
 //
 //            runtime = new ElapsedTime();
@@ -143,7 +147,7 @@ public class fundationAutonomous extends LinearOpMode  {
 //            while(runtime.milliseconds() < 500){
 //            }
 //
-//            fundationHolder.setPosition(1);
+//            foundationHolder.setPosition(1);
 //
 //            runtime = new ElapsedTime();
 //            while(runtime.milliseconds() < 5000){}
