@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="out">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/FTC FIRE Team/TeamCode/build/intermediates/merged_jni_libs/debug/out/Hardware-release-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/FTC FIRE Team/TeamCode/build/intermediates/merged_jni_libs/debug/out/RobotServer-release-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/FTC FIRE Team/TeamCode/build/intermediates/merged_jni_libs/debug/out/FtcCommon-release-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/FTC FIRE Team/TeamCode/build/intermediates/merged_jni_libs/debug/out/RobotCore-release-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/FTC FIRE Team/TeamCode/build/intermediates/merged_jni_libs/debug/out/Vuforia.jar!/" />
+      <root url="jar://$PROJECT_DIR$/FTC FIRE Team/TeamCode/build/intermediates/merged_jni_libs/debug/out/Blocks-release-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/FTC FIRE Team/TeamCode/build/intermediates/merged_jni_libs/debug/out/Inspection-release-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/FTC FIRE Team/TeamCode/build/intermediates/merged_jni_libs/debug/out/OnBotJava-release-sources.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

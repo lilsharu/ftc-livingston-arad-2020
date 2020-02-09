@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="java">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/FTC FIRE Team/TeamCode/build/intermediates/merged_assets/debug/out/java/android.jar!/" />
+      <root url="jar://$PROJECT_DIR$/FTC FIRE Team/TeamCode/build/intermediates/merged_assets/debug/out/java/onbotjava-classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
