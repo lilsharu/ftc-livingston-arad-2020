@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode.FIRE_team;
 import java.lang.Math;
 
-import java.lang.reflect.Array;
-import java.util.Map;
-
-
 
 public class Location {
 

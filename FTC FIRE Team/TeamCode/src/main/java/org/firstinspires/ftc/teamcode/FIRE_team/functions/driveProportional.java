@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.FIRE_team.functions;
 
-import com.qualcomm.robotcore.util.Range;
-
 public interface driveProportional {
     /**
      * the interface fo the thread
@@ -10,5 +8,5 @@ public interface driveProportional {
      * @param vmax
 
      */
-    double driveProportionalFunction(double distance, double slow, double vmax);
+    double driveProportionalFunction(double distance, double slow , double vmax);
 }

@@ -54,8 +54,8 @@ public class ConceptRevSPARKMini extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotorSimple leftMotor = null;
-    private DcMotorSimple rightMotor = null;
+    private DcMotorSimple leftDrive = null;
+    private DcMotorSimple rightDrive = null;
 
     @Override
     public void runOpMode() {
@@ -65,13 +65,13 @@ public class ConceptRevSPARKMini extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftMotor  = hardwareMap.get(DcMotorSimple.class, "left_drive");
-        rightMotor = hardwareMap.get(DcMotorSimple.class, "right_drive");
+        leftDrive  = hardwareMap.get(DcMotorSimple.class, "left_drive");
+        rightDrive = hardwareMap.get(DcMotorSimple.class, "right_drive");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -100,8 +100,8 @@ public class ConceptRevSPARKMini extends LinearOpMode {
             // rightPower = -gamepad1.right_stick_y ;
 
             // Send calculated power to wheels
-            leftMotor.setPower(leftPower);
-            rightMotor.setPower(rightPower);
+            leftDrive.setPower(leftPower);
+            rightDrive.setPower(rightPower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());

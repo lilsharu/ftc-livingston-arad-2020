@@ -14,10 +14,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.functions.driveFunction1;
-import org.firstinspires.ftc.teamcode.functions.driveProportional;
-import org.firstinspires.ftc.teamcode.functions.gyroFunction1;
-import org.firstinspires.ftc.teamcode.functions.gyroProportional;
+import org.firstinspires.ftc.teamcode.FIRE_team.functions.driveFunction1;
+import org.firstinspires.ftc.teamcode.FIRE_team.functions.driveProportional;
+import org.firstinspires.ftc.teamcode.FIRE_team.functions.gyroFunction1;
+import org.firstinspires.ftc.teamcode.FIRE_team.functions.gyroProportional;
 
 public class AutoDrivingSecondTry {
     /** Declare  the parts and verbals   */
@@ -34,7 +34,7 @@ public class AutoDrivingSecondTry {
         private Telemetry telemetry;
    //     private Location currentRobotLocation ;
         private ElapsedTime runtime = new ElapsedTime();
-        private fundationAutonomous EC ;
+        private LocationControlTest EC ;
         private DistanceToTargetFinder distanceToTargetFinder;
         private ActiveLocation activeLocation;
         private driveProportional driveProportional;
