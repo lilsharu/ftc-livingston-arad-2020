@@ -8,16 +8,14 @@ package org.firstinspires.ftc.teamcode.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.Robot;
 
 @TeleOp(name="FinalTeleOp", group="TeleOp")
 
 public class FinalTeleOp extends OpMode {
     //Creates a Robot Class
     private Robot robot;
-    ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime runtime = new ElapsedTime();
 
 
     private double deadZone = 0.1;
