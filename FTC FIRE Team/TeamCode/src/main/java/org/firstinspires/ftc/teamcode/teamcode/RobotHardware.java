@@ -3,19 +3,17 @@
  * Created by Team Member Shourya Bansal and edited by Aryan Bansal
  */
 package org.firstinspires.ftc.teamcode.teamcode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class RobotHardware {
     //Declaring the specific hardware for our robot
     //The DC Motors:
-    private DcMotor middle_drive;
-    private DcMotor leftFrontMotor;
-    private DcMotor rightFrontMotor;
+    public DcMotor middle_drive;
+    public DcMotor leftFrontMotor;
+    public DcMotor rightFrontMotor;
 /*
     //The Servos
     private Servo liftClawServo;

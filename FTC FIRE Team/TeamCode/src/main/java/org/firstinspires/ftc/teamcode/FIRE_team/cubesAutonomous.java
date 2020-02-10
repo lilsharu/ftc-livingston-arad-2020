@@ -48,7 +48,7 @@ public class cubesAutonomous extends LinearOpMode {
 //        Robot_Prameters rp = new Robot_Prameters( 2500 , new Location(830,220)); // I assumed we use dimensions in millimeters
 //        Field field  = new Field(400000 , 40000);
         imu = robot.imu;
-        fundationHolder = robot.foundationHolder;
+        fundationHolder = robot.fundationHolder;
         sideDistanceSensor = robot.sideDistanceSensor;
         frontDistanceSensor = robot.frontDistanceSensor;
         leftExpantion = robot.leftExpantion;
