@@ -17,7 +17,6 @@ public class DistanceToTargetFinder implements Runnable{
     /**
      *this class finds the distance to a target
      */
-
     private ActiveLocation activeLocation;
     private BNO055IMU imu;
     private volatile Location newPoint;

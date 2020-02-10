@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.FIRE_team;
- /**
+ /*
  * we import imu ,LinearOpMode,DcMotor,distance sensor,ElapsedTime, Telemetry,AngleUnit,AxesOrder,AxesReference,DistanceUnit,driveFunction1,driveProportional,gyroFunction1 and gyroProportional
  */
 
@@ -54,8 +54,8 @@ public class AutoDrivingSecondTry {
      * @param linearOpMode
      */
         public AutoDrivingSecondTry (DcMotor leftSide, DcMotor rightSide, DcMotor middleMotor,
-                           BNO055IMU imu/*, Field field */, Telemetry telemetry , LinearOpMode linearOpMode,
-                                     DistanceSensor sideDistanceSensor, DistanceSensor frontDistanceSensor, Location beginningPoint)
+                            BNO055IMU imu/*, Field field */, Telemetry telemetry , LinearOpMode linearOpMode,
+                            DistanceSensor sideDistanceSensor, DistanceSensor frontDistanceSensor, Location beginningPoint)
         {
 
             this.linearOpMode = linearOpMode;
@@ -141,84 +141,84 @@ public class AutoDrivingSecondTry {
      * @param slowAngle
      * @param Vmax
      */
-        public void setPosition(Location locationToReach , double angleToReach , double distanceRange , double slowDrive , double angleRange , double slowAngle , double Vmax){
-            try {
-                telemetry.addData("Begining is Active still alive: ", currentLocationThread.isAlive());
-                telemetry.addData("Begining is finder still alive:", targetLocationThread.isAlive());
-                telemetry.update();
+    public void setPosition(Location locationToReach , double angleToReach , double distanceRange , double slowDrive , double angleRange , double slowAngle , double Vmax){
+        try {
+            telemetry.addData("Begining is Active still alive: ", currentLocationThread.isAlive());
+            telemetry.addData("Begining is finder still alive:", targetLocationThread.isAlive());
+            telemetry.update();
 
 //            ElapsedTime runtime = new ElapsedTime();
 //            while (runtime.time() < 2000){}
 
-                distanceToTargetFinder.setNewPoint(locationToReach);
+            distanceToTargetFinder.setNewPoint(locationToReach);
 
-                double[] distancesToDrive = distanceToTargetFinder.getDistanceTotarget();
-                double gyroAngle = -imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-                double rightMotorSpeed;
-                double leftMotorSpeed;
-                double middleMotorSpeed;
-                while (!Thread.interrupted() && linearOpMode.opModeIsActive() && !(Math.abs(distancesToDrive[0]) < distanceRange && Math.abs(distancesToDrive[1]) < distanceRange
-                        && Math.abs(angleToReach-gyroAngle) < angleRange))
-                {
-                    distancesToDrive = distanceToTargetFinder.getDistanceTotarget();
-                    telemetry.addData("encoders: left ",leftSide.getCurrentPosition());
-                    telemetry.addData("encoders: right ",rightSide.getCurrentPosition());
-                    telemetry.addData("encoders: midddle ",middleMotor.getCurrentPosition());
-                    telemetry.addData("x axis distance: ", distancesToDrive[0]);
-                    telemetry.addData("y axis distance: ", distancesToDrive[1]);
-                    telemetry.addData("x current: ", activeLocation.getX_Axis());
-                    telemetry.addData("y current: ", activeLocation.getY_Axis());
-
-                    gyroAngle = -imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-
-                    double DrivePropValStraight = driveProportional.driveProportionalFunction(distancesToDrive[1], slowDrive , Vmax);
-                    double DrivePropValMiddle = driveProportional.driveProportionalFunction(distancesToDrive[0], slowDrive , Vmax);
-                    double gyroPropVal = gyroProportional.gyroProportionalCalculation(angleToReach, gyroAngle, slowAngle, Vmax/2);
-                    double Max = Math.max(Math.abs(distancesToDrive[0]), Math.abs(distancesToDrive[1]));
-                    double driveProp = distancesToDrive[1] * (-DrivePropValStraight);
-                    double firstCalc = 1 - Math.abs(gyroPropVal);
-
-                    Max = Math.max(Max ,1.0 );
-                    rightMotorSpeed = ((firstCalc) * (driveProp) / Max) + gyroPropVal;
-                    leftMotorSpeed = ((firstCalc) * (driveProp) / Max) - gyroPropVal;
-                    middleMotorSpeed = distancesToDrive[0] * DrivePropValMiddle / Max;
-
-                    telemetry.addData("left speed ", leftMotorSpeed);
-                    telemetry.addData("middle speed: ", middleMotorSpeed);
-                    telemetry.addData("right speed: ", rightMotorSpeed);
-                    telemetry.addData("gyro angle: ", gyroAngle);
-                    telemetry.addData("first driveprop caculation: ", driveProp);
-                    telemetry.addData("first 1-gyroPropVal caculation: ", firstCalc);
-                    telemetry.update();
-
-                    leftSide.setPower(leftMotorSpeed);
-                    rightSide.setPower(rightMotorSpeed);
-                    middleMotor.setPower(middleMotorSpeed);
-                 //   Thread.sleep(50);
-                }
-
-
+            double[] distancesToDrive = distanceToTargetFinder.getDistanceTotarget();
+            double gyroAngle = -imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+            double rightMotorSpeed;
+            double leftMotorSpeed;
+            double middleMotorSpeed;
+            while (!Thread.interrupted() && linearOpMode.opModeIsActive() && !(Math.abs(distancesToDrive[0]) < distanceRange && Math.abs(distancesToDrive[1]) < distanceRange
+                    && Math.abs(angleToReach-gyroAngle) < angleRange))
+            {
                 distancesToDrive = distanceToTargetFinder.getDistanceTotarget();
+                telemetry.addData("encoders: left ",leftSide.getCurrentPosition());
+                telemetry.addData("encoders: right ",rightSide.getCurrentPosition());
+                telemetry.addData("encoders: midddle ",middleMotor.getCurrentPosition());
+                telemetry.addData("x axis distance: ", distancesToDrive[0]);
+                telemetry.addData("y axis distance: ", distancesToDrive[1]);
+                telemetry.addData("x current: ", activeLocation.getX_Axis());
+                telemetry.addData("y current: ", activeLocation.getY_Axis());
+
+                gyroAngle = -imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+                double DrivePropValStraight = driveProportional.driveProportionalFunction(distancesToDrive[1], slowDrive , Vmax);
+                double DrivePropValMiddle = driveProportional.driveProportionalFunction(distancesToDrive[0], slowDrive , Vmax);
+                double gyroPropVal = gyroProportional.gyroProportionalCalculation(angleToReach, gyroAngle, slowAngle, Vmax/2);
+                double Max = Math.max(Math.abs(distancesToDrive[0]), Math.abs(distancesToDrive[1]));
+                double driveProp = distancesToDrive[1] * (-DrivePropValStraight);
+                double firstCalc = 1 - Math.abs(gyroPropVal);
+
+                Max = Math.max(Max ,1.0 );
+                rightMotorSpeed = ((firstCalc) * (driveProp) / Max) + gyroPropVal;
+                leftMotorSpeed = ((firstCalc) * (driveProp) / Max) - gyroPropVal;
+                middleMotorSpeed = distancesToDrive[0] * DrivePropValMiddle / Max;
+
+                telemetry.addData("left speed ", leftMotorSpeed);
+                telemetry.addData("middle speed: ", middleMotorSpeed);
+                telemetry.addData("right speed: ", rightMotorSpeed);
+                telemetry.addData("gyro angle: ", gyroAngle);
+                telemetry.addData("first driveprop caculation: ", driveProp);
+                telemetry.addData("first 1-gyroPropVal caculation: ", firstCalc);
+                telemetry.update();
+
+                leftSide.setPower(leftMotorSpeed);
+                rightSide.setPower(rightMotorSpeed);
+                middleMotor.setPower(middleMotorSpeed);
+             //   Thread.sleep(50);
+            }
+
+
+            distancesToDrive = distanceToTargetFinder.getDistanceTotarget();
 //                telemetry.addData("encoders: left ",leftSide.getCurrentPosition());
 //                telemetry.addData("encoders: right ",rightSide.getCurrentPosition());
 //                telemetry.addData("encoders: midddle ",middleMotor.getCurrentPosition());
 
-                telemetry.addData("x current: ", activeLocation.getX_Axis());
-                telemetry.addData("y current: ", activeLocation.getY_Axis());
-                telemetry.addData("After while exit :x axis distance: ", distancesToDrive[0]);
-                telemetry.addData("After while exit :y axis distance: ", distancesToDrive[1]);
-                telemetry.addData("is Active still alive: ", currentLocationThread.isAlive());
-                telemetry.addData("is finder still alive:", targetLocationThread.isAlive());
+            telemetry.addData("x current: ", activeLocation.getX_Axis());
+            telemetry.addData("y current: ", activeLocation.getY_Axis());
+            telemetry.addData("After while exit :x axis distance: ", distancesToDrive[0]);
+            telemetry.addData("After while exit :y axis distance: ", distancesToDrive[1]);
+            telemetry.addData("is Active still alive: ", currentLocationThread.isAlive());
+            telemetry.addData("is finder still alive:", targetLocationThread.isAlive());
 
-                telemetry.update();
-                leftSide.setPower(0);
-                rightSide.setPower(0);
-                middleMotor.setPower(0);
+            telemetry.update();
+            leftSide.setPower(0);
+            rightSide.setPower(0);
+            middleMotor.setPower(0);
 //                runtime = new ElapsedTime();
 //                while (runtime.time() < 10000) {
 //                }
-            }catch (Exception e){ telemetry.addData("error:",e.getStackTrace().toString());}
+        }catch (Exception e){ telemetry.addData("error:",e.getStackTrace().toString());}
 
-        }
+    }
 
 }

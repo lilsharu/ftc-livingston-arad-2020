@@ -289,7 +289,7 @@ public class Teleop extends LinearOpMode {
                 gripperMotor.setPower(0);
             }
 /**
- * open and close the fundationHolder
+ * open and close the foundationHolder
  */
             if (gamepad1.start && !foundationHolderIsOpened && !g1StartButtonIsPressed) {
                 fundationHolder.setPosition(0);
