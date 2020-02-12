@@ -125,10 +125,10 @@ public class LocationControlTest extends LinearOpMode  {
             telemetry.addData("Angle: ", imu.getAngularOrientation());
             //telemetry.update();
             //Orientation angle =  imu.getAngularOrientation();
-            int y = 0;
+            int y = 1800;
 
-            ad.setPosition(new Location(1175, y),
-                    -1, 25, 25, 10, 30, 0.3 );
+            ad.setPosition(new Location(0, y),
+                    0, 25, 25, 10, 30, 0.3 );
             //runtime = new ElapsedTime();
             telemetry.addData("At pos: ", 1);
             telemetry.update();
@@ -144,9 +144,8 @@ public class LocationControlTest extends LinearOpMode  {
                 telemetry.update();}
 
             //Thread.sleep(1000);
-            //coment
             //ad.setPosition(new Location(0, 0),
-                    //0, 100, 200, 10, 30, .9 );
+            //0, 100, 200, 10, 30, .9 );
 
             //start = runtime.milliseconds() ;
             //while (runtime.milliseconds()-start < 1000) { }
@@ -157,13 +156,14 @@ public class LocationControlTest extends LinearOpMode  {
             //start = runtime.milliseconds() ;
             //while (runtime.milliseconds()-start < 1000) { }
             //Thread.sleep(1000);
-            //ad.setPosition(new Location(1175, 2100),
-                    //0, 25, 20, 10, 30, 0.5 );
-           //ad.setPosition(new Location(1500, y), 0, 50, 25, 10, 0, 0.5 );
-            //ad.setPosition(new Location(1500, 1500),
-                     //0,25,20,10,30, 0.5);
+            y-=300;
+            ad.setPosition(new Location(0, (y)),
+                    0, 25, 20, 10, 30, 0.5 );
+            ad.setPosition(new Location(1500, (y)), 0, 50, 25, 10, 0, 0.5 );
+            ad.setPosition(new Location(1500, y),
+                    180,25,20,10,30, 0.5);
             //ad.setPosition(new Location(2100, y),
-                    //0, 25, 20, 10, 30, 0.5 );
+            //0, 25, 20, 10, 30, 0.5 );
 //            ad.setPosition(new Location(500, 2500),
 //                    0, 150, 250, 200, 0, 0.5 );
 //            ad.setPosition(new Location(-1500, 2500),
