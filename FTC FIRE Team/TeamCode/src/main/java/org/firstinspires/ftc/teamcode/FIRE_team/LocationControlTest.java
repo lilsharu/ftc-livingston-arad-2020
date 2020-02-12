@@ -144,6 +144,7 @@ public class LocationControlTest extends LinearOpMode  {
                 telemetry.update();}
 
             //Thread.sleep(1000);
+            //coment
             //ad.setPosition(new Location(0, 0),
                     //0, 100, 200, 10, 30, .9 );
 
