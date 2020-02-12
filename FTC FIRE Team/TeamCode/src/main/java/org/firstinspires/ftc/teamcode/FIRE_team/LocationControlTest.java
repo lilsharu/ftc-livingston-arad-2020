@@ -33,24 +33,23 @@ package org.firstinspires.ftc.teamcode.FIRE_team;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-//import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-//import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-//import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+
+//import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+//import com.qualcomm.robotcore.hardware.Servo;
+//import com.qualcomm.robotcore.util.Range;
 //import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 //import org.firstinspires.ftc.robotcore.external.Telemetry;
 //import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 //import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 //import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-
 //import java.util.Observable;
 //import java.util.Observer;
-
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 
 @Autonomous(name="LocationControlTest", group="Pushbot")
@@ -116,13 +115,16 @@ public class LocationControlTest extends LinearOpMode  {
         waitForStart();
 
         try {
+            telemetry.speak("test");
+            telemetry.addData("Angle: ", imu.isGyroCalibrated());
+            telemetry.update();
             //  fundationHolder.setPosition(0);
 ////            ad.setPosition(new Location(200, -100),
 ////                    -90, 20, 200, 10, 60, 0.6 );
 
 
-
-            telemetry.addData("Angle: ", imu.getAngularOrientation());
+            //String angle = ""+imu.getAngularOrientation();
+            //telemetry.addData("Angle: ", imu.getPosition());
             //telemetry.update();
             //Orientation angle =  imu.getAngularOrientation();
             int y = 1800;
@@ -131,6 +133,8 @@ public class LocationControlTest extends LinearOpMode  {
                     0, 25, 25, 10, 30, 0.3 );
             //runtime = new ElapsedTime();
             telemetry.addData("At pos: ", 1);
+
+            //telemetry.speak(angle);
             telemetry.update();
             leftSide.setPower(0);
             rightSide.setPower(0);
@@ -141,7 +145,10 @@ public class LocationControlTest extends LinearOpMode  {
             start = runtime.milliseconds() ;
             while (runtime.milliseconds()-start < 1000) {
                 telemetry.addData("time:",runtime.milliseconds()-start );
+                telemetry.addData("angle: ", imu.getAngularOrientation());
                 telemetry.update();}
+            //String angle = ""+imu.getAngularOrientation();
+
 
             //Thread.sleep(1000);
             //ad.setPosition(new Location(0, 0),
@@ -156,12 +163,15 @@ public class LocationControlTest extends LinearOpMode  {
             //start = runtime.milliseconds() ;
             //while (runtime.milliseconds()-start < 1000) { }
             //Thread.sleep(1000);
-            y-=300;
-            ad.setPosition(new Location(0, (y)),
-                    0, 25, 20, 10, 30, 0.5 );
-            ad.setPosition(new Location(1500, (y)), 0, 50, 25, 10, 0, 0.5 );
-            ad.setPosition(new Location(1500, y),
-                    180,25,20,10,30, 0.5);
+
+            //y-=300;
+            //ad.setPosition(new Location(0, (y)),
+            //0, 25, 20, 10, 30, 0.5 );
+            //ad.setPosition(new Location(1500, (y)), 0, 50, 25, 10, 0, 0.5 );
+            //ad.setPosition(new Location(1500, y),
+            //180,25,20,10,30, 0.5);
+
+
             //ad.setPosition(new Location(2100, y),
             //0, 25, 20, 10, 30, 0.5 );
 //            ad.setPosition(new Location(500, 2500),
