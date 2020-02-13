@@ -132,7 +132,7 @@ public class LocationControlTest extends LinearOpMode  {
             ad.setPosition(new Location(0, y),
                     0, 25, 25, 10, 30, 0.3 );
             //runtime = new ElapsedTime();
-            telemetry.addData("At pos: ", 1);
+            telemetry.speak("At position one");
 
             //telemetry.speak(angle);
             telemetry.update();
