@@ -30,9 +30,15 @@
 package org.firstinspires.ftc.teamcode.FIRE_team;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 
 @Autonomous(name="park", group="Pushbot")
@@ -40,25 +46,54 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class park extends LinearOpMode  {
 
     /* Declare OpMode members. */
-    Hardware robot = new Hardware();
     private ElapsedTime runtime = new ElapsedTime();
-
-
     private BNO055IMU imu;
+    private Servo rightExpansion;
+    //Hardware robot = new Hardware();
+    private DcMotor leftSide;
+    //private DcMotor griper;
+    private DcMotor rightSide;
+    private DcMotor middleMotor;
+
 
     @Override
     public void runOpMode() {
+        leftSide = hardwareMap.get(DcMotor.class, "left_drive");
+        rightSide = hardwareMap.get(DcMotor.class, "right_drive");
+        middleMotor =hardwareMap.get(DcMotor.class, "middle_drive");
+        rightExpansion = hardwareMap.get(Servo.class,"rightExpansion");
+        //Sets the direction of the motors, one motor as to be reversed for all to spin in same direction
+        leftSide.setDirection(DcMotor.Direction.FORWARD);
+        rightSide.setDirection(DcMotor.Direction.REVERSE);
+        middleMotor.setDirection(DcMotor.Direction.FORWARD);
 
-        robot.init(hardwareMap);
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        while (runtime.milliseconds()<3000){
+            rightExpansion.setPosition(0.65);
+        }
+        leftSide.setPower(0);
+        rightSide.setPower(0);
+        middleMotor.setPower(0);
 
 
 
-        Robot_Prameters rp = new Robot_Prameters( 2500 , new Location(0,0)); // I assumed we use dimensions in millimeters
-        Field field  = new Field(400000 , 40000);
+
+
 //        leftSide = robot.leftDrive ;
 //        rightSide = robot.rightDrive;
 //        middleMotor = robot.middleDrive;
-        imu = robot.imu;
+
 
 //        leftSide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        rightSide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -66,11 +101,6 @@ public class park extends LinearOpMode  {
 
 
 
-        AutoDriving AD = new AutoDriving(robot.rightDrive , robot.leftDrive , robot.middleDrive ,
-                 robot.imu,rp,field , telemetry);
 
-        waitForStart();
-        Location point = new Location( 0 , 300);
-        AD.DriveToCordinate(point , 15 , 0 );
     }
 }

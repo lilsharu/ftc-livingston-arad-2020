@@ -41,7 +41,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 //import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-//import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.Servo;
 //import com.qualcomm.robotcore.util.Range;
 //import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 //import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -60,7 +60,7 @@ public class LocationControlTest extends LinearOpMode  {
     //Hardware robot = new Hardware();
     private ElapsedTime runtime = new ElapsedTime();
     private BNO055IMU imu;
-    //private Servo fundationHolder;
+    private Servo rightExpansion;
     //Hardware robot = new Hardware();
     private DcMotor leftSide;
     //private DcMotor griper;
@@ -75,6 +75,7 @@ public class LocationControlTest extends LinearOpMode  {
         leftSide = hardwareMap.get(DcMotor.class, "left_drive");
         rightSide = hardwareMap.get(DcMotor.class, "right_drive");
         middleMotor =hardwareMap.get(DcMotor.class, "middle_drive");
+        rightExpansion = hardwareMap.get(Servo.class,"rightExpansion");
         //Sets the direction of the motors, one motor as to be reversed for all to spin in same direction
         leftSide.setDirection(DcMotor.Direction.FORWARD);
         rightSide.setDirection(DcMotor.Direction.REVERSE);
@@ -115,7 +116,7 @@ public class LocationControlTest extends LinearOpMode  {
         waitForStart();
 
         try {
-            telemetry.speak("test");
+            //telemetry.speak("test");
             telemetry.addData("Angle: ", imu.isGyroCalibrated());
             telemetry.update();
             //  fundationHolder.setPosition(0);
@@ -129,10 +130,10 @@ public class LocationControlTest extends LinearOpMode  {
             //Orientation angle =  imu.getAngularOrientation();
             int y = 1800;
 
-            ad.setPosition(new Location(0, y),
+            ad.setPosition(new Location(600, 0),
                     0, 25, 25, 10, 30, 0.3 );
             //runtime = new ElapsedTime();
-            telemetry.speak("At position one");
+            //telemetry.speak("At position one");
 
             //telemetry.speak(angle);
             telemetry.update();
