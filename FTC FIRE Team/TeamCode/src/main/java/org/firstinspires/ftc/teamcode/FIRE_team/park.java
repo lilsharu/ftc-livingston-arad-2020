@@ -80,6 +80,8 @@ public class park extends LinearOpMode  {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
         while (runtime.milliseconds()<3000){
+            leftSide.setPower(.5);
+            rightSide.setPower(.5);
             rightExpansion.setPosition(0.65);
         }
         leftSide.setPower(0);
